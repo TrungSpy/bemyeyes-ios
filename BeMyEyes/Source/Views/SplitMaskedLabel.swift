@@ -82,7 +82,9 @@ import UIKit
     }
     
     override func prepareForInterfaceBuilder() {
-        super.prepareForInterfaceBuilder()
+        if #available(iOS 8.0, *) {
+            super.prepareForInterfaceBuilder()
+        }
         
         text = "Testing"
         backgroundColor = UIColor.redColor()

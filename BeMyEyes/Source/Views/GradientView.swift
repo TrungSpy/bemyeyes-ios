@@ -52,7 +52,7 @@ extension UIColor {
         setup()
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
@@ -62,8 +62,8 @@ extension UIColor {
         backgroundColor = .clearColor()
         layer.addSublayer(gradientLayer)
     }
-    
-    override func layoutSublayersOfLayer(layer: CALayer!) {
+
+    override func layoutSublayersOfLayer(layer: CALayer) {
         super.layoutSublayersOfLayer(layer)
         CATransaction.begin()
         CATransaction.setDisableActions(true) // Disable animations when changing bounds of CALayer
@@ -77,6 +77,7 @@ extension UIColor {
         gradientLayer.endPoint = endPoint
     }
     
+    @available(iOS 8.0, *)
     override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         

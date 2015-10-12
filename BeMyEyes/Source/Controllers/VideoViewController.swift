@@ -72,12 +72,12 @@ extension VideoViewController {
     }
     
     func useAudioCategory(audioCategory: String) {
-        var error: NSError? = nil
-        let success = AVAudioSession.sharedInstance().setCategory(audioCategory, error: &error)
-        if !success {
-            if let error = error {
-                println("Could not set audio category to '%@': %@", audioCategory, error)
-            }
+    
+        do {
+            try AVAudioSession.sharedInstance().setCategory(audioCategory)
+        }
+        catch let error {
+            print("Could not set audio category to '%@': %@", audioCategory, error)
         }
     }
 }

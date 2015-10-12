@@ -25,12 +25,12 @@ class DemoCallViewController: BMEBaseViewController {
 	
 	private var canPerformDemoCall: Bool {
 		if UIApplication.instancesRespondToSelector(Selector("registerUserNotificationSettings:")) {
-			let application = UIApplication.sharedApplication()
-			let types = application.currentUserNotificationSettings().types.rawValue
-			let soundEnabled = types & UIRemoteNotificationType.Sound.rawValue != 0
-			let alertEnabled = types & UIRemoteNotificationType.Alert.rawValue != 0
-			let badgeEnabled = types & UIRemoteNotificationType.Badge.rawValue != 0
-			return application.isRegisteredForRemoteNotifications() && soundEnabled && alertEnabled && badgeEnabled
+			if #available(iOS 8.0, *) {
+                let application = UIApplication.sharedApplication()
+                if let types = application.currentUserNotificationSettings()?.types {
+                return application.isRegisteredForRemoteNotifications() && types != .None
+                }
+			}
 		}
 		return true
 	}
@@ -70,8 +70,12 @@ class DemoCallViewController: BMEBaseViewController {
 		updateDisplayedViews()
 		
 		if !canPerformDemoCall {
-			let settings = UIUserNotificationSettings(forTypes: .Sound | .Alert | .Badge, categories: BMEAccessControlHandler.notificationCategories())
-			UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+			if #available(iOS 8.0, *) {
+                let categories = BMEAccessControlHandler.notificationCategories() as! Set<UIUserNotificationCategory>
+			    let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: categories)
+                
+                UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+			}
 		}
 	}
 	
@@ -93,8 +97,8 @@ class DemoCallViewController: BMEBaseViewController {
 			notification.userInfo = [DemoCallViewController.NotificationIsDemoKey() : true]
 			notification.soundName = "call-repeat.aiff"
 			notification.applicationIconBadgeNumber = 0
-            if notification.respondsToSelector(Selector("category:")) {
-                notification.category = NotificationCategoryReply;
+            if #available(iOS 8.0, *) {
+                notification.category = NotificationCategoryReply
             }
 			UIApplication.sharedApplication().scheduleLocalNotification(notification)
 		}
