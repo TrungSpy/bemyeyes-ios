@@ -115,10 +115,10 @@ class ClientTest: XCTestCase {
 
 extension String {
     
-    subscript (i: Int) -> String {
-        return String(Array(self)[i])
+    subscript (i: Int) -> Character {
+        return self[self.startIndex.advancedBy(i)]
     }
-    
+
     static func random() -> String {
         return NSUUID().UUIDString
     }
