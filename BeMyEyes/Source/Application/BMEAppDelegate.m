@@ -105,6 +105,14 @@
         [self.window makeKeyAndVisible];
         [self.window addSubview:self.inAppTestBadgeWindow];
     }
+    
+    // Work around changes to language identifiers in iOS 9 until MKLocalization supports this
+    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"AppleLanguages"];
+    NSString *preferedLanguage = [NSLocale preferredLanguages].firstObject;
+    if (preferedLanguage) {
+        NSString *shortenedPreferedLanguage = [preferedLanguage substringToIndex:2];
+        [MKLocalization changeLocalizationTo:shortenedPreferedLanguage];
+    }
   
     return YES;
 }
