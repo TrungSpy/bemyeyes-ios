@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SocialTextProvider: UIActivityItemProvider, UIActivityItemSource {
+class SocialTextProvider: UIActivityItemProvider {
 	
 	private var facebookText: String
 	private var twitterText: String
@@ -18,7 +18,7 @@ class SocialTextProvider: UIActivityItemProvider, UIActivityItemSource {
 		self.facebookText = facebookText
 		self.twitterText = twitterText
 		self.defaultText = defaultText
-		super.init()
+		super.init(placeholderItem: defaultText)
 	}
 	
 	override func activityViewController(activityViewController: UIActivityViewController, itemForActivityType activityType: String) -> AnyObject? {

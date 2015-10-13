@@ -20,10 +20,11 @@ class BaseViewController: UIViewController {
     override func shouldAutorotate() -> Bool {
         return true
     }
-
-    override func supportedInterfaceOrientations() -> Int {
-        let isIpad = UIDevice.currentDevice().userInterfaceIdiom == .Pad;
-        return Int((isIpad ? UIInterfaceOrientationMask.All : .Portrait).rawValue);
+    
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        let isIpad = UIDevice.currentDevice().userInterfaceIdiom == .Pad
+        
+        return isIpad ? [.Portrait, .PortraitUpsideDown] : [.All]
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -38,7 +39,7 @@ class BaseViewController: UIViewController {
         return false
     }
     
-    @IBAction func backButtonPressed(AnyObject) {
+    @IBAction func backButtonPressed(_: AnyObject) {
         self.navigationController?.popViewControllerAnimated(true)
     }
 }

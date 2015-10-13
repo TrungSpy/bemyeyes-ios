@@ -28,19 +28,19 @@ extension BMEUser {
         nextLevel.threshold = 500
         user.setValue(nextLevel, forKey: "nextLevel")
       
-        var point1 = BMEPointEntry()
+        let point1 = BMEPointEntry()
         point1.setValue(30, forKey: "point")
         point1.setValue("finish_helping_request", forKey: "event")
         point1.setValue(NSDate().dateByAddingTimeInterval(-60*2), forKey: "date")
-        var point2 = BMEPointEntry()
+        let point2 = BMEPointEntry()
         point2.setValue(5, forKey: "point")
         point2.setValue("answer_push_message", forKey: "event")
         point2.setValue(NSDate().dateByAddingTimeInterval(-60*60*3), forKey: "date")
-        var point3 = BMEPointEntry()
+        let point3 = BMEPointEntry()
         point3.setValue(30, forKey: "point")
         point3.setValue("finish_helping_request", forKey: "event")
         point3.setValue(NSDate().dateByAddingTimeInterval(-60*60*24), forKey: "date")
-        var point4 = BMEPointEntry()
+        let point4 = BMEPointEntry()
         point4.setValue(30, forKey: "point")
         point4.setValue("finish_helping_request", forKey: "event")
         point4.setValue(NSDate().dateByAddingTimeInterval(-60*60*72), forKey: "date")
@@ -53,7 +53,7 @@ extension BMEUser {
 extension BMECommunityStats {
     
     class func idealStats() -> BMECommunityStats {
-        var stats = BMECommunityStats()
+        let stats = BMECommunityStats()
         stats.sighted = 218711
         stats.blind = 19053
         stats.helped = 75888

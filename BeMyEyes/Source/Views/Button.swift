@@ -120,7 +120,7 @@ import UIKit
         setup()
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
@@ -189,7 +189,7 @@ extension CGRect {
     
     func inset(insets: UIEdgeInsets) -> CGRect {
         var rect = self
-        rect.offset(dx: insets.left, dy: insets.top)
+        rect.offsetInPlace(dx: insets.left, dy: insets.top)
         rect.size.width -= insets.left + insets.right
         rect.size.height -= insets.top + insets.bottom
         return rect

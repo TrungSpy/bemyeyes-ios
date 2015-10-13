@@ -37,15 +37,21 @@ struct Language {
 extension FBSnapshotTestCase {
 
     func verifyView(view: UIView, identifier: String) {
-        var error: NSError?
-        let referenceImagesDirectory = "\(FB_REFERENCE_IMAGE_DIR)"
-        UIView.setAnimationsEnabled(false)
-        let comparisonSuccess = compareSnapshotOfView(view, referenceImagesDirectory: referenceImagesDirectory, identifier: identifier, error: &error)
-        UIView.setAnimationsEnabled(true)
+        var comparisonSuccess = false
         var str = "Snapshot comparison failed"
-        if let error = error {
-            str += error.localizedDescription
+        
+        do {
+            let referenceImagesDirectory = "\(FB_REFERENCE_IMAGE_DIR)"
+            UIView.setAnimationsEnabled(false)
+            try compareSnapshotOfView(view, referenceImagesDirectory: referenceImagesDirectory, identifier: identifier, tolerance: 1)
+            UIView.setAnimationsEnabled(true)
+            
+            comparisonSuccess = true
         }
+        catch let error {
+            str += " \(error)"
+        }
+        
         XCTAssertTrue(comparisonSuccess, str)
         XCTAssertFalse(self.recordMode, "Test ran in record mode. Reference image is now saved. Disable record mode to perform an actual snapshot comparison!");
     }

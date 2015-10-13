@@ -47,7 +47,9 @@ import UIKit
         label.frame = bounds
         setup()
     }
+   
     
+    @available(iOS 8.0, *)
     override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         

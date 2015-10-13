@@ -1969,6 +1969,7 @@
 				4E7BA9961A1B5D9300F9744A /* Frameworks */,
 				4E7BA9971A1B5D9300F9744A /* Resources */,
 				47C570E79D5ED67FA34BE15B /* Copy Pods Resources */,
+				7B0E446EC2D52B4C6D53AA39 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1992,6 +1993,7 @@
 				B7DF8BE5A9DE4CE1B1BDE152 /* Copy Pods Resources */,
 				4E901DCD19E5B5680067CEB2 /* Embed Frameworks */,
 				4E8ABED719F9423B0005F6E8 /* ShellScript */,
+				B76A88E8479791CFA6EE788D /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2010,6 +2012,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = BME;
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0620;
 				ORGANIZATIONNAME = "Be My Eyes";
 				TargetAttributes = {
@@ -2204,6 +2207,21 @@
 			shellPath = /bin/sh;
 			shellScript = "./Pods/CrashlyticsFramework/Crashlytics.framework/run 41644116426a80147f822825bb643b3020b0f9d3 d46cde6eb84378999f53f4c323d53c7537a9c764c126ba8de77c0df968081cd1";
 		};
+		7B0E446EC2D52B4C6D53AA39 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BeMyEyes Tests/Pods-BeMyEyes Tests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		8E2F39EC94737FCB4B30ACE4 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2217,6 +2235,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B76A88E8479791CFA6EE788D /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BeMyEyes/Pods-BeMyEyes-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B7DF8BE5A9DE4CE1B1BDE152 /* Copy Pods Resources */ = {
@@ -3675,6 +3708,7 @@
 				CURRENT_PROJECT_VERSION = 63;
 				DISPLAY_NAME = "Be My Alpha";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/BeMyEyes/Source/Other\\ sources/**",
@@ -3724,6 +3758,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = DebugDev;
 		};
@@ -3742,6 +3777,7 @@
 				CURRENT_PROJECT_VERSION = 63;
 				DISPLAY_NAME = "Be My Alpha";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/BeMyEyes/Source/Other\\ sources/**",
@@ -3791,6 +3827,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = DebugStaging;
 		};
@@ -3809,6 +3846,7 @@
 				CURRENT_PROJECT_VERSION = 63;
 				DISPLAY_NAME = "Be My Beta";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/BeMyEyes/Source/Other\\ sources/**",
@@ -3873,6 +3911,7 @@
 				CURRENT_PROJECT_VERSION = 63;
 				DISPLAY_NAME = "Be My Beta";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/BeMyEyes/Source/Other\\ sources/**",
@@ -3902,10 +3941,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -3934,10 +3970,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_REFERENCE_IMAGE_DIR=\"\\\"$(SOURCE_ROOT)/$(PROJECT_NAME)\\ Tests/ReferenceImages\\\"\"",
@@ -3965,10 +3998,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_REFERENCE_IMAGE_DIR=\"\\\"$(SOURCE_ROOT)/$(PROJECT_NAME)\\ Tests/ReferenceImages\\\"\"",
@@ -3997,10 +4027,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "BeMyEyes Tests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
@@ -4024,10 +4051,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "BeMyEyes Tests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
@@ -4051,10 +4075,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "BeMyEyes Tests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
@@ -4139,6 +4160,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -4188,6 +4210,7 @@
 				CURRENT_PROJECT_VERSION = 63;
 				DISPLAY_NAME = "Be My Eyes";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/BeMyEyes/Source/Other\\ sources/**",
@@ -4221,6 +4244,7 @@
 				CURRENT_PROJECT_VERSION = 63;
 				DISPLAY_NAME = "Be My Eyes";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/BeMyEyes/Source/Other\\ sources/**",

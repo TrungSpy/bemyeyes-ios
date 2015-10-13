@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc class FacebookHelper {
+@objc class FacebookHelper: NSObject {
    
     @objc class func urlForId(id: String) -> NSURL? {
         let urlString = "https://graph.facebook.com/\(id)/picture?type=large"

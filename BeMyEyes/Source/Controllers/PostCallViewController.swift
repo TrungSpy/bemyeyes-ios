@@ -87,15 +87,17 @@ class PostCallViewController: BMEBaseViewController, MKLocalizable {
 			let url = NSURL(string: "https://itunes.apple.com/app/id" + BMEAppStoreId)!
 			let controller = UIActivityViewController(activityItems: [ messageProvider, url ], applicationActivities: nil)
 			if UIDevice.isiPad() && controller.respondsToSelector(Selector("popoverPresentationController")) {
-				controller.popoverPresentationController?.sourceView = view
-				controller.popoverPresentationController?.sourceRect = shareButton.frame
+				if #available(iOS 8.0, *) {
+				    controller.popoverPresentationController?.sourceView = view
+                    controller.popoverPresentationController?.sourceRect = shareButton.frame
+				}
 			}
 			presentViewController(controller, animated: true, completion: nil)
 		}
 	}
 	
     @IBAction func didTapOkButton(sender: Button) {
-        if count(BMEAppStoreId) > 0 {
+        if BMEAppStoreId.characters.count > 0 {
             Appirater.userDidSignificantEvent(true)
         }
         dismiss()
