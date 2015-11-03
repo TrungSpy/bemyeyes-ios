@@ -81,6 +81,8 @@
 		4EECE0E01A56957E0073AFDF /* FrontPageViewController_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EECE0DF1A56957E0073AFDF /* FrontPageViewController_Tests.swift */; };
 		4EFA28081A2B7A4F0050450C /* MaskedLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1916CE19E5800300B85E61 /* MaskedLabel.swift */; };
 		556D82D33DA8A505A137BD4A /* libPods-BeMyEyes Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03381774851623C2C6BE0645 /* libPods-BeMyEyes Tests.a */; };
+		57DB94FF1BE8BF59007A3C63 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB94FE1BE8BF59007A3C63 /* AnalyticsManager.swift */; };
+		57DB95011BE8C4C9007A3C63 /* ApplicationProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB95001BE8C4C9007A3C63 /* ApplicationProperties.swift */; };
 		7206A76118FA9BF000251824 /* BMEPointLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7206A76018FA9BF000251824 /* BMEPointLabel.m */; };
 		7206A76618FA9C0D00251824 /* BMEPointGraphEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 7206A76318FA9C0D00251824 /* BMEPointGraphEntry.m */; };
 		7206A76718FA9C0D00251824 /* BMEPointGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7206A76518FA9C0D00251824 /* BMEPointGraphView.m */; };
@@ -1285,6 +1287,8 @@
 		4EFCE5871A55C57700FAE663 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4EFCE5881A55C57700FAE663 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/PostCallLocalizationTable.strings; sourceTree = "<group>"; };
 		541D916399355C19CD490FDC /* Pods-BeMyEyes Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeMyEyes Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeMyEyes Tests/Pods-BeMyEyes Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		57DB94FE1BE8BF59007A3C63 /* AnalyticsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		57DB95001BE8C4C9007A3C63 /* ApplicationProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationProperties.swift; sourceTree = "<group>"; };
 		5DB997FFB6ADF4A3BE47FEBF /* Pods.releasedev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.releasedev.xcconfig; path = "Pods/Target Support Files/Pods/Pods.releasedev.xcconfig"; sourceTree = "<group>"; };
 		60BAD311403180811F795B70 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		7206A75F18FA9BF000251824 /* BMEPointLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BMEPointLabel.h; sourceTree = "<group>"; };
@@ -1733,7 +1737,6 @@
 			children = (
 				7236E03F18B8CCF400F622AA /* BMEBaseViewController.h */,
 				7236E04018B8CCF400F622AA /* BMEBaseViewController.m */,
-				4E65448B1A017E8D00B71C1C /* BaseViewController.swift */,
 				72E65FA518BA7CE3002FB2E0 /* BMEFrontPageViewController.h */,
 				72E65FA618BA7CE3002FB2E0 /* BMEFrontPageViewController.m */,
 				72E65FA218BA7C12002FB2E0 /* BMEIntroViewController.h */,
@@ -1768,13 +1771,14 @@
 				729B1CCF19015F0700B5ABEA /* BMESecretSettingsViewController.m */,
 				72B1493218DF4C8900E9A8A9 /* BMECallViewController.h */,
 				72B1493318DF4C8900E9A8A9 /* BMECallViewController.m */,
-				4E3ACE1719FFEF4F002548C8 /* PostCallViewController.swift */,
 				72B84BA31949DC9A0057D92C /* BMEReportAbuseViewController.h */,
 				72B84BA41949DC9A0057D92C /* BMEReportAbuseViewController.m */,
 				727E13E7194B2AF8002EDA7E /* BMEForgotPasswordViewController.h */,
 				727E13E8194B2AF8002EDA7E /* BMEForgotPasswordViewController.m */,
 				72414AF5196AA33200A2C5F4 /* BMELanguagesViewController.h */,
 				72414AF6196AA33200A2C5F4 /* BMELanguagesViewController.m */,
+				4E65448B1A017E8D00B71C1C /* BaseViewController.swift */,
+				4E3ACE1719FFEF4F002548C8 /* PostCallViewController.swift */,
 				4E8E21F219E8C03C00316AD8 /* IntroVideoViewController.swift */,
 				4E8ABED419F7FE370005F6E8 /* TaskIntroVideoViewController.swift */,
 				4E8E21F419E8C03C00316AD8 /* VideoViewController.swift */,
@@ -1813,6 +1817,8 @@
 				4EB3A9A21A0E6D4F0044D4B9 /* BMEOpenTokVideoCapture.h */,
 				4EB3A9A31A0E6D4F0044D4B9 /* BMEOpenTokVideoCapture.m */,
 				4EA667371AF77A810082D658 /* UserTokenHandler.swift */,
+				57DB94FE1BE8BF59007A3C63 /* AnalyticsManager.swift */,
+				57DB95001BE8C4C9007A3C63 /* ApplicationProperties.swift */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -2341,6 +2347,7 @@
 				7236E04A18B8DD8E00F622AA /* BMESignUpViewController.m in Sources */,
 				4EB3A9A41A0E6D4F0044D4B9 /* BMEOpenTokVideoCapture.m in Sources */,
 				7296569918CC8C3E00E1A9EE /* BMEMainViewController.m in Sources */,
+				57DB94FF1BE8BF59007A3C63 /* AnalyticsManager.swift in Sources */,
 				4EB6AD1719E1F48C00141615 /* GradientView.swift in Sources */,
 				72A7676C19029F34003121C4 /* NSDate+BMESnoozeRelativeDate.m in Sources */,
 				4E1916CF19E5800300B85E61 /* MaskedLabel.swift in Sources */,
@@ -2350,6 +2357,7 @@
 				4EB6AD2219E1F4F400141615 /* BMEPointsTableViewCell.m in Sources */,
 				4EB6AD1F19E1F4D700141615 /* BMECommunityStats.m in Sources */,
 				4EB6A1E219E5725F00C72A02 /* Button.swift in Sources */,
+				57DB95011BE8C4C9007A3C63 /* ApplicationProperties.swift in Sources */,
 				7220D0E91A7A45B8005DF4F0 /* HelperWelcomeViewController.swift in Sources */,
 				72DEF73218B90A6D0048FA90 /* NSData+CommonCrypto.m in Sources */,
 				4E6544881A0136F700B71C1C /* BMEScrollViewTextFieldHelper.m in Sources */,

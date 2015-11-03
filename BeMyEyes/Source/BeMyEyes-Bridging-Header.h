@@ -19,3 +19,4 @@
 #import "BMEUser.h"
 #import <Appirater/Appirater.h>
 #import "BMEAccessControlHandler.h"
+#import "Mixpanel.h"
