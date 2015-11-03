@@ -146,11 +146,6 @@ static NSString * const Localizable = @"Localizable";
 static NSString * const PostCallLocalizationTable = @"PostCallLocalizationTable";
 
 /*!
- * InfoPlist strings file 
- */
-static NSString * const InfoPlist = @"InfoPlist";
-
-/*!
  * "Please enable the following to fully join the Be My Eyes network"
 
  * All translations:
