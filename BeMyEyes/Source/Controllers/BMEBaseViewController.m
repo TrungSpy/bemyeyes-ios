@@ -17,7 +17,7 @@
     return YES;
 }
 
-- (NSUInteger)supportedInterfaceOrientations {
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     BOOL isIpad = [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad;
     return isIpad ? UIInterfaceOrientationMaskAll : UIInterfaceOrientationMaskPortrait;
 }

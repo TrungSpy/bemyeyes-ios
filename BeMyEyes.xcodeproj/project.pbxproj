@@ -12,6 +12,7 @@
 			buildConfigurationList = 4E850D7A1A826A3E00B89FB0 /* Build configuration list for PBXAggregateTarget "PreBuild" */;
 			buildPhases = (
 				4E850D811A826A4200B89FB0 /* ShellScript */,
+				57DB95021BE8DF05007A3C63 /* TODO treated as warnings */,
 			);
 			dependencies = (
 			);
@@ -2212,6 +2213,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "./Pods/CrashlyticsFramework/Crashlytics.framework/run 41644116426a80147f822825bb643b3020b0f9d3 d46cde6eb84378999f53f4c323d53c7537a9c764c126ba8de77c0df968081cd1";
+		};
+		57DB95021BE8DF05007A3C63 /* TODO treated as warnings */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "TODO treated as warnings";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TAGS=\"TODO:|FIXME:\"\necho \"searching ${SRCROOT} for ${TAGS}\"\nfind \"${SRCROOT}\" \\( -name \"*.swift\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($TAGS).*\\$\" | perl -p -e \"s/($TAGS)/ warning: \\$1/\"";
 		};
 		7B0E446EC2D52B4C6D53AA39 /* Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
