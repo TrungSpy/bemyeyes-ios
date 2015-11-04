@@ -43,17 +43,23 @@ static NSString *BMECallPostSegue = @"PostCall";
 @end
 
 @implementation BMECallViewController
+{
+    NSDate* _callInitiated;
+}
 
 #pragma mark -
 #pragma mark Lifecycle
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     [MKLocalization registerForLocalization:self];
     
     self.statusLabel.text = MKLocalizedFromTable(BME_CALL_STATUS_PLEASE_WAIT, BMECallLocalizationTable);
     self.activityIndicatorView.isAccessibilityElement = NO;
+    
+    _callInitiated = nil;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -99,7 +105,7 @@ static NSString *BMECallPostSegue = @"PostCall";
     if (self.disconnecting) {
         return NO;
     }
-    [self disconnect];
+    [self disconnectWithError:nil];
     return YES;
 }
 
@@ -107,7 +113,7 @@ static NSString *BMECallPostSegue = @"PostCall";
     if (self.disconnecting) {
         return NO;
     }
-    [self disconnect];
+    [self disconnectWithError:nil];
     return YES;
 }
 
@@ -118,71 +124,85 @@ static NSString *BMECallPostSegue = @"PostCall";
 - (IBAction)cancelButtonPressed:(id)sender {
     NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_DISCONNECTING, BMECallLocalizationTable);
     [self changeStatus:statusText];
-    [self disconnect];
+    [self disconnectWithError:nil];
 }
 
 - (void)createNewRequest {
     NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_CREATING_REQUEST, BMECallLocalizationTable);
     [self changeStatus:statusText];
     
-    [[BMEClient sharedClient] createRequestWithSuccess:^(BMERequest *request) {
-        self.requestIdentifier = request.identifier;
-        self.shortId = request.shortId;
-        self.sessionId = request.openTok.sessionId;
-        self.token = request.openTok.token;
-        [self connect];
-        [self playCallTone];
-    } failure:^(NSError *error) {
-        NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_CREATING_REQUEST_TITLE, BMECallLocalizationTable);
-        NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_CREATING_REQUEST_MESSAGE, BMECallLocalizationTable);
-        NSString *cancel = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_CREATING_REQUEST_CANCEL, BMECallLocalizationTable);
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
-        [alertView show];
-        
-        NSLog(@"Request could not be created: %@", error.localizedDescription);
-        
-        [self dismiss];
-    }];
+    [AnalyticsManager beginTrackingEventWithType:AnalyticsEvent_Blind_Request];
+    
+    [[BMEClient sharedClient]
+     createRequestWithSuccess:^(BMERequest *request) {
+         self.requestIdentifier = request.identifier;
+         self.shortId = request.shortId;
+         self.sessionId = request.openTok.sessionId;
+         self.token = request.openTok.token;
+         [self connect];
+         [self playCallTone];
+     }
+     failure:^(NSError *error) {
+         NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_CREATING_REQUEST_TITLE, BMECallLocalizationTable);
+         NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_CREATING_REQUEST_MESSAGE, BMECallLocalizationTable);
+         NSString *cancel = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_CREATING_REQUEST_CANCEL, BMECallLocalizationTable);
+         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
+         [alertView show];
+         
+         NSLog(@"Request could not be created: %@", error.localizedDescription);
+         
+         [self endTrackingRequestOrAnswerWithError:error];
+         
+         [self dismiss];
+     }];
 }
 
 - (void)answerRequestWithShortId:(NSString *)shortId {
     NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_ANSWERING_REQUEST, BMECallLocalizationTable);
     [self changeStatus:statusText];
     
-    [[BMEClient sharedClient] answerRequestWithShortId:shortId success:^(BMERequest *request) {
-        self.requestIdentifier = request.identifier;
-        self.shortId = request.shortId;
-        self.sessionId = request.openTok.sessionId;
-        self.token = request.openTok.token;
-        [self connect];
-    } failure:^(NSError *error) {
-        if ([error code] == BMEClientErrorRequestAlreadyAnswered) {
-            NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_ANSWERED_TITLE, BMECallLocalizationTable);
-            NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_ANSWERED_MESSAGE, BMECallLocalizationTable);
-            NSString *cancel = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_ANSWERED_CANCEL, BMECallLocalizationTable);
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
-            [alertView show];
-        } else if ([error code] == BMEClientErrorRequestStopped) {
-            NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_STOPPED_TITLE, BMECallLocalizationTable);
-            NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_STOPPED_MESSAGE, BMECallLocalizationTable);
-            NSString *cancel = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_STOPPED_CANCEL, BMECallLocalizationTable);
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
-            [alertView show];
-        } else {
-            NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_UNKNOWN_TITLE, BMECallLocalizationTable);
-            NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_UNKNOWN_MESSAGE, BMECallLocalizationTable);
-            NSString *cancel = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_UNKNOWN_CANCEL, BMECallLocalizationTable);
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
-            [alertView show];
-        }
-        
-        NSLog(@"Request could not be answered: %@", error);
-        
-        [self dismiss];
-    }];
+    [AnalyticsManager beginTrackingEventWithType:AnalyticsEvent_Sighted_Answer];
+    
+    [[BMEClient sharedClient]
+     answerRequestWithShortId:shortId
+     success:^(BMERequest *request) {
+         self.requestIdentifier = request.identifier;
+         self.shortId = request.shortId;
+         self.sessionId = request.openTok.sessionId;
+         self.token = request.openTok.token;
+         [self connect];
+     }
+     failure:^(NSError *error) {
+         if ([error code] == BMEClientErrorRequestAlreadyAnswered) {
+             NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_ANSWERED_TITLE, BMECallLocalizationTable);
+             NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_ANSWERED_MESSAGE, BMECallLocalizationTable);
+             NSString *cancel = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_ANSWERED_CANCEL, BMECallLocalizationTable);
+             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
+             [alertView show];
+         } else if ([error code] == BMEClientErrorRequestStopped) {
+             NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_STOPPED_TITLE, BMECallLocalizationTable);
+             NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_STOPPED_MESSAGE, BMECallLocalizationTable);
+             NSString *cancel = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_REQUEST_STOPPED_CANCEL, BMECallLocalizationTable);
+             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
+             [alertView show];
+         } else {
+             NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_UNKNOWN_TITLE, BMECallLocalizationTable);
+             NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_UNKNOWN_MESSAGE, BMECallLocalizationTable);
+             NSString *cancel = MKLocalizedFromTable(BME_CALL_ALERT_FAILED_ANSWERING_UNKNOWN_CANCEL, BMECallLocalizationTable);
+             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
+             [alertView show];
+         }
+         
+         NSLog(@"Request could not be answered: %@", error);
+         
+         [self endTrackingRequestOrAnswerWithError:error];
+         
+         [self dismiss];
+     }];
 }
 
-- (void)connect {
+- (void)connect
+{
     NSLog(@"Connect to session: %@", self.shortId);
     NSLog(@" - sessionId: %@", self.sessionId);
     NSLog(@" - token: %@", self.token);
@@ -194,24 +214,42 @@ static NSString *BMECallPostSegue = @"PostCall";
     
     OTError *error = nil;
     [self.session connectWithToken:self.token error:&error];
-    if (error) {
+    if (error)
+    {
+        [self endTrackingRequestOrAnswerWithError:error];
+        
         NSLog(@"OpenTok: Failed connecting to session with error: %@", error);
-        [self disconnect];
+        [self disconnectWithError:error];
     }
 }
 
-- (void)disconnect {
+- (void)disconnectWithError:(NSError*)error
+{
     self.disconnecting = YES;
     
     [self.videoView removeFromSuperview];
     self.videoView = nil;
     
-    void(^completion)(BOOL, NSError*) = ^(BOOL success, NSError *error) {
+    if (error)
+    {
+        [self endTrackingCallWithError:error];
+    }
+    
+    void(^completion)(BOOL, NSError*) = ^(BOOL success, NSError *error)
+    {
+        if (error)
+        {
+            NSLog(@"Disconnect client error: %@", error);
+            [self endTrackingCallWithError:error];
+        }
+            
         OTError *otError = nil;
         
         if (self.subscriber) {
             [self.session unsubscribe:self.subscriber error:&otError];
-            if (error) {
+            if (otError)
+            {
+                [self endTrackingCallWithError:otError];
                 NSLog(@"OpenTok: Failed unsubscribing with error: %@", error);
             }
         
@@ -221,13 +259,17 @@ static NSString *BMECallPostSegue = @"PostCall";
         if (self.publisher) {
             otError = nil;
             [self.session unpublish:self.publisher error:&otError];
-            if (error) {
+            if (otError)
+            {
+                [self endTrackingCallWithError:otError];
                  NSLog(@"OpenTok: Failed unpublishing with error: %@", error);
             }
         
             self.publisher = nil;
         }
-    
+        
+        [self endTrackingCallWithError:nil];
+
         [self dismiss];
     };
     
@@ -256,7 +298,7 @@ static NSString *BMECallPostSegue = @"PostCall";
     [self.session publish:self.publisher error:&error];
     if (error) {
         NSLog(@"OpenTok: Failed publishing with error: %@", error);
-        [self disconnect];
+        [self disconnectWithError:error];
     }
 }
 
@@ -269,7 +311,7 @@ static NSString *BMECallPostSegue = @"PostCall";
     [self.session subscribe:self.subscriber error:&error];
     if (error) {
         NSLog(@"OpenTok: Failed subscribing to stream with error: %@", error);
-        [self disconnect];
+        [self disconnectWithError:error];
     }
 }
 
@@ -353,16 +395,19 @@ static NSString *BMECallPostSegue = @"PostCall";
 #pragma mark -
 #pragma mark Session Delegate
 
-- (void)sessionDidConnect:(OTSession *)session {
+- (void)sessionDidConnect:(OTSession *)session
+{
     NSLog(@"OpenTok: [Session] Did connect");
-    if (!self.isDisconnecting) {
+    if (!self.isDisconnecting)
+    {
         NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_CONNECTION_ESTABLISHED, BMECallLocalizationTable);
         [self changeStatus:statusText];
         [self publish];
     }
 }
 
-- (void)sessionDidDisconnect:(OTSession *)session {
+- (void)sessionDidDisconnect:(OTSession *)session
+{
     NSLog(@"OpenTok: [Session] Did disconnect");
     [self dismiss];
 }
@@ -372,12 +417,17 @@ static NSString *BMECallPostSegue = @"PostCall";
     
     NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_SESSION_FAILED, BMECallLocalizationTable);
     [self changeStatus:statusText];
-    [self disconnect];
+    [self disconnectWithError:error];
 }
 
 - (void)session:(OTSession *)session streamCreated:(OTStream *)stream {
     NSLog(@"OpenTok: [Session] Stream created");
-    if (!self.isDisconnecting) {
+    if (!self.isDisconnecting)
+    {
+        [self endTrackingRequestOrAnswerWithError:nil];
+        [AnalyticsManager beginTrackingEventWithType:AnalyticsEvent_Call];
+        _callInitiated = [NSDate new];
+        
         // Make sure we don't subscribe to our own stream
         if (![stream.connection.connectionId isEqualToString:session.connection.connectionId]) {
             NSLog(@"OpenTok: [Session] Subscribe to stream");
@@ -386,9 +436,13 @@ static NSString *BMECallPostSegue = @"PostCall";
     }
 }
 
-- (void)session:(OTSession *)session streamDestroyed:(OTStream *)stream {
+- (void)session:(OTSession *)session streamDestroyed:(OTStream *)stream
+{
     NSLog(@"OpenTok: [Session] Stream destroyed");
-    if (!self.isDisconnecting) {
+    if (!self.isDisconnecting)
+    {
+        [self endTrackingCallWithError:nil];
+        
         // If we are not disconnecting ourselves, then the other part has disconnected
         NSString *title = MKLocalizedFromTable(BME_CALL_ALERT_OTHER_PART_DISCONNECTED_TITLE, BMECallLocalizationTable);;
         NSString *message = MKLocalizedFromTable(BME_CALL_ALERT_OTHER_PART_DISCONNECTED_MESSAGE, BMECallLocalizationTable);
@@ -396,7 +450,7 @@ static NSString *BMECallPostSegue = @"PostCall";
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:cancel otherButtonTitles:nil, nil];
         [alertView show];
         
-        [self disconnect];
+        [self disconnectWithError:nil];
     }
 }
 
@@ -418,7 +472,7 @@ static NSString *BMECallPostSegue = @"PostCall";
         [self changeStatus:statusText];
     });
     
-    [self disconnect];
+    [self disconnectWithError:error];
 }
 
 #pragma mark -
@@ -451,7 +505,7 @@ static NSString *BMECallPostSegue = @"PostCall";
     NSLog(@"OpenTok: [Subscriber] Did fail with error: %@", error);
     NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_FAILED_SUBSCRIBING, BMECallLocalizationTable);
     [self changeStatus:statusText];
-    [self disconnect];
+    [self disconnectWithError:error];
 }
 
 #pragma mark -
@@ -462,6 +516,61 @@ static NSString *BMECallPostSegue = @"PostCall";
         PostCallViewController *postCallViewController = (PostCallViewController *)segue.destinationViewController;
         postCallViewController.requestIdentifier = self.requestIdentifier;
     }
+}
+
+#pragma mark - Analytics
+
+- (void) endTrackingRequestOrAnswerWithError:(NSError*)error
+{
+    if (error == nil)
+    {
+        if ([BMEClient sharedClient].currentUser.isBlind)
+        {
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{@"Result": [NSString stringWithFormat:@"Success"]}];
+        }
+        else
+        {
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{@"Result": [NSString stringWithFormat:@"Success"]}];
+        }
+    }
+    else
+    {
+        if ([BMEClient sharedClient].currentUser.isBlind)
+        {
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{@"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+        }
+        else
+        {
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{@"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+        }
+    }
+}
+
+- (void) endTrackingCallWithError:(NSError*)error
+{
+    if (!_callInitiated)
+    {
+        return;
+    }
+    
+    if (error)
+    {
+        [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+    }
+    else
+    {
+        NSDate* now = [NSDate new];
+        
+        if ([now timeIntervalSinceDate:_callInitiated] < 20)
+        {
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Result": @"Failure - call lasted less than 20 seconds"}];
+        }
+        else
+        {
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Result": @"Success"}];
+        }
+    }
+    _callInitiated = nil;
 }
 
 @end
