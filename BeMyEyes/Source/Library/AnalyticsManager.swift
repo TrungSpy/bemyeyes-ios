@@ -27,6 +27,17 @@ import Foundation
 @objc class AnalyticsManager: NSObject
 {
     // MARK: - The methods to actually use from outside:
+    
+    static func identifyUser(user: BMEUser?)
+    {
+        AnalyticsManager.instance.identifyUser(user)
+    }
+    
+    static func updateUserInformation(user: BMEUser)
+    {
+        AnalyticsManager.instance.updateUserInformation(user)
+    }
+
     static func trackEvent(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
     {
         AnalyticsManager.instance.trackEvent(event, withProperties: properties)
@@ -54,6 +65,73 @@ import Foundation
         }
         
         super.init()
+    }
+    
+    private func identifyUser(user: BMEUser?)
+    {
+        if (user?.identifier != Mixpanel.sharedInstance().distinctId)
+        {
+            updateDistinctIdWithUser(user)
+        }
+    }
+    
+    private func updateDistinctIdWithUser(user: BMEUser?)
+    {
+        Mixpanel.sharedInstance().identify(user?.identifier)
+        
+        if let theUser = user
+        {
+            if let email = theUser.email
+            {
+                NSLog("Analytics: Identifying user: \(email)")
+            }
+            else
+            {
+                NSLog("Analytics: Identifying user")
+            }
+            
+            updateUserInformation(theUser)
+        }
+        else
+        {
+            NSLog("Analytics: Identifying nil user")
+        }
+    }
+    
+    private func updateUserInformation(user: BMEUser)
+    {
+        var personalProperties = [NSObject: AnyObject]()
+        if let user = BMEClient.sharedClient().currentUser
+        {
+            if let firstName = user.firstName {
+                personalProperties["$first_name"] = firstName
+            }
+            
+            if let lastName = user.lastName {
+                personalProperties["$last_name"] = lastName
+            }
+            
+            /*if let created = user.created  {
+            personalProperties["$created"] = created
+            }*/
+            
+            if let email = user.email {
+                personalProperties["$email"] = email
+            }
+            
+            if (user.isBlind())
+            {
+                personalProperties["user_type"] = "Blind"
+            }
+            else
+            {
+                personalProperties["user_type"] = "Sighted"
+            }
+        }
+        
+        NSLog("Analytics: Updating user information: \(personalProperties)")
+        
+        Mixpanel.sharedInstance().people.set(personalProperties)
     }
     
     private func trackEvent(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)

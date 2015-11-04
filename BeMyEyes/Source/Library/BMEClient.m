@@ -171,6 +171,9 @@ NSString* BMENormalizedDeviceTokenStringWithDeviceToken(id deviceToken) {
         [currentUser setValue:email forKeyPath:@"email"];
         [self storeCurrentUser:currentUser];
         
+        
+        [AnalyticsManager updateUserInformation:currentUser];
+        
         if (completion) {
             completion(YES, nil);
         }
@@ -238,6 +241,8 @@ NSString* BMENormalizedDeviceTokenStringWithDeviceToken(id deviceToken) {
     [self storeToken:nil];
     [self storeTokenExpiryDate:nil];
     [self setHeaderAuthToken:nil];
+    
+    [AnalyticsManager identifyUser:nil];
 }
 
 - (void)verifyTokenAuthOnServerWithCompletion:(void (^)(BOOL))completion {
@@ -620,7 +625,8 @@ NSString* BMENormalizedDeviceTokenStringWithDeviceToken(id deviceToken) {
 - (BMEUser *)currentUser {
     NSData *userData = [[NSUserDefaults standardUserDefaults] objectForKey:BMEClientCurrentUserKey];
     if (userData) {
-        return [NSKeyedUnarchiver unarchiveObjectWithData:userData];
+        BMEUser* result = [NSKeyedUnarchiver unarchiveObjectWithData:userData];
+        return result;
     }
     
     return nil;
@@ -672,6 +678,8 @@ NSString* BMENormalizedDeviceTokenStringWithDeviceToken(id deviceToken) {
         
         BMEUser *currentUser = [self mapUserFromRepresentation:responseObject];
         [self storeCurrentUser:currentUser];
+        
+        [AnalyticsManager identifyUser:currentUser];
         
         NSLog(@"Did log in using endpoints users/login with parameters: %@", params);
         NSLog(@"Received token after log in: %@", token.token);

@@ -298,6 +298,8 @@
         NSLog(@"No user");
         [self showFrontPage];
     }
+    
+    [AnalyticsManager identifyUser:[BMEClient sharedClient].currentUser];
 }
 
 - (void)loginFailed {
