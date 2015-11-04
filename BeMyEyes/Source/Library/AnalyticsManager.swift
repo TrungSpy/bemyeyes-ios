@@ -14,12 +14,19 @@ import Foundation
     case _TestEvent
     
     // General:
+    case _Signup
     
     
     // Sigthed:
     
     
     // Blind:
+}
+
+@objc enum SignupType: Int
+{
+    case _Email
+    case _Facebook
 }
 
 
@@ -41,6 +48,12 @@ import Foundation
     static func trackEvent(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
     {
         AnalyticsManager.instance.trackEvent(event, withProperties: properties)
+    }
+    
+    static func trackSignupWithType(type: SignupType)
+    {
+        // Make sure user has been identified!
+        AnalyticsManager.instance.trackEvent(._Signup, withProperties: ["Signup Type": [AnalyticsManager.stringForSignupType(type)]])
     }
     
     
@@ -121,11 +134,11 @@ import Foundation
             
             if (user.isBlind())
             {
-                personalProperties["user_type"] = "Blind"
+                personalProperties["User Type"] = "Blind"
             }
             else
             {
-                personalProperties["user_type"] = "Sighted"
+                personalProperties["User Type"] = "Sighted"
             }
         }
         
@@ -137,14 +150,24 @@ import Foundation
     private func trackEvent(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
     {
         NSLog("Track event: \(event) - properties: \(properties)")
-        Mixpanel.sharedInstance().track(stringForAnalyticsEvent(event), properties: properties)
+        Mixpanel.sharedInstance().track(AnalyticsManager.stringForAnalyticsEvent(event), properties: properties)
     }
 
-    private func stringForAnalyticsEvent(event: AnalyticsEvent) -> String
+    private class func stringForAnalyticsEvent(event: AnalyticsEvent) -> String
     {
         switch (event)
         {
-            case ._TestEvent: return "TestEvent"
+            case ._TestEvent:   return "TestEvent"
+            case ._Signup:      return "Signup"
+        }
+    }
+    
+    private class func stringForSignupType(type: SignupType) -> String
+    {
+        switch (type)
+        {
+            case ._Email:   return "Email"
+            case ._Facebook:  return "Facebook"
         }
     }
 }

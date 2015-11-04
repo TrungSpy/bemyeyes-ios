@@ -112,6 +112,8 @@
                 [progressOverlayView hide:YES];
                 if (success && !error) {
                     [self didLogin];
+                    
+                    [AnalyticsManager trackSignupWithType:SignupType_Facebook];
                 } else {
                     if ([error code] == BMEClientErrorUserEmailAlreadyRegistered)  {
                         NSString *title = MKLocalizedFromTable(BME_SIGN_UP_METHOD_ALERT_FACEBOOK_EMAIL_ALREADY_REGISTERED_TITLE, BMESignUpMethodLocalizationTable);

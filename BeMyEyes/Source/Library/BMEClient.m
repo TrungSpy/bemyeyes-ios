@@ -679,8 +679,6 @@ NSString* BMENormalizedDeviceTokenStringWithDeviceToken(id deviceToken) {
         BMEUser *currentUser = [self mapUserFromRepresentation:responseObject];
         [self storeCurrentUser:currentUser];
         
-        [AnalyticsManager identifyUser:currentUser];
-        
         NSLog(@"Did log in using endpoints users/login with parameters: %@", params);
         NSLog(@"Received token after log in: %@", token.token);
         
@@ -936,6 +934,8 @@ NSString* BMENormalizedDeviceTokenStringWithDeviceToken(id deviceToken) {
     if (user) {
         NSData *userData = [NSKeyedArchiver archivedDataWithRootObject:user];
         [[NSUserDefaults standardUserDefaults] setObject:userData forKey:BMEClientCurrentUserKey];
+        
+        [AnalyticsManager identifyUser:user];
     } else {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:BMEClientCurrentUserKey];
     }
