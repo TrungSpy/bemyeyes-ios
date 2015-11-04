@@ -54,6 +54,7 @@ import Foundation
     {
         // Make sure user has been identified!
         AnalyticsManager.instance.trackEvent(._Signup, withProperties: ["Signup Type": [AnalyticsManager.stringForSignupType(type)]])
+        AnalyticsManager.instance.updateUserInformation(BMEClient.sharedClient().currentUser, andCreated:NSDate())
     }
     
     
@@ -111,7 +112,7 @@ import Foundation
         }
     }
     
-    private func updateUserInformation(user: BMEUser)
+    private func updateUserInformation(user: BMEUser, andCreated createdTime: NSDate? = nil)
     {
         var personalProperties = [NSObject: AnyObject]()
         if let user = BMEClient.sharedClient().currentUser
@@ -124,9 +125,9 @@ import Foundation
                 personalProperties["$last_name"] = lastName
             }
             
-            /*if let created = user.created  {
-            personalProperties["$created"] = created
-            }*/
+            if let created = createdTime {
+                personalProperties["$created"] = created
+            }
             
             if let email = user.email {
                 personalProperties["$email"] = email
