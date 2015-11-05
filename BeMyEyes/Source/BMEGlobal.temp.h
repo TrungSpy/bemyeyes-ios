@@ -28,6 +28,7 @@
 #define BMESlackUrl @""
 
 
+#define BMEMixpanelDevlopmentToken ""
 #define BMEMixpanelToken ""
 
 #endif
