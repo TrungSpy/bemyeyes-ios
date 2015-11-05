@@ -77,7 +77,7 @@ import Foundation
     
     private override init()
     {
-        Mixpanel.sharedInstanceWithToken("b8a82537f03c536a6e73f430d6ab9872")
+        Mixpanel.sharedInstanceWithToken(BMEMixpanelToken)
         
         if let bundleId = NSBundle.mainBundle().bundleIdentifier
         {

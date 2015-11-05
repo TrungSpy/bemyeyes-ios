@@ -21,4 +21,13 @@
 
 #define BMEAppStoreId @""
 
+#define BMECrowdInProjectKey @""
+
+#define BMEKeychainToken @""
+
+#define BMESlackUrl @""
+
+
+#define BMEMixpanelToken ""
+
 #endif
