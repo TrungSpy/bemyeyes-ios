@@ -77,19 +77,15 @@ import Foundation
     
     private override init()
     {
-        switch (ApplicationProperties.environment())
-        {
-        case .Development:
-            Mixpanel.sharedInstanceWithToken("b8a82537f03c536a6e73f430d6ab9872")
-            
-        case .Staging:
-            Mixpanel.sharedInstanceWithToken("???") // TODO: Fill this in.
-            
-        case .Production:
-            Mixpanel.sharedInstanceWithToken("???") // TODO: Fill this in.
+        Mixpanel.sharedInstanceWithToken("b8a82537f03c536a6e73f430d6ab9872")
         
-        case .Undefined:
-            AnalyticsManager.LogWhite("---- Cannot initialize Mixpanel without determined environment")
+        if let bundleId = NSBundle.mainBundle().bundleIdentifier
+        {
+             Mixpanel.sharedInstance().registerSuperProperties(["Bundle Id": bundleId])
+        }
+        else
+        {
+            Mixpanel.sharedInstance().registerSuperProperties(["Bundle Id": "Unknown"])
         }
         
         super.init()

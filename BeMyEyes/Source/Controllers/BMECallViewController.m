@@ -529,22 +529,22 @@ static NSString *BMECallPostSegue = @"PostCall";
     {
         if ([BMEClient sharedClient].currentUser.isBlind)
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{@"Result": [NSString stringWithFormat:@"Success"]}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Success"]}];
         }
         else
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{@"Result": [NSString stringWithFormat:@"Success"]}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Success"]}];
         }
     }
     else
     {
         if ([BMEClient sharedClient].currentUser.isBlind)
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{@"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
         }
         else
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{@"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
         }
     }
 }
@@ -558,7 +558,7 @@ static NSString *BMECallPostSegue = @"PostCall";
     
     if (error)
     {
-        [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+        [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
     }
     else
     {
@@ -566,11 +566,11 @@ static NSString *BMECallPostSegue = @"PostCall";
         
         if ([now timeIntervalSinceDate:_callInitiated] < 20)
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Result": @"Failure - call lasted less than 20 seconds"}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": @"Failure - call lasted less than 20 seconds"}];
         }
         else
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Result": @"Success"}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": @"Success"}];
         }
     }
     _callInitiated = nil;
