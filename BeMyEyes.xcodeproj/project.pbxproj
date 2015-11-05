@@ -82,6 +82,8 @@
 		4EECE0E01A56957E0073AFDF /* FrontPageViewController_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EECE0DF1A56957E0073AFDF /* FrontPageViewController_Tests.swift */; };
 		4EFA28081A2B7A4F0050450C /* MaskedLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1916CE19E5800300B85E61 /* MaskedLabel.swift */; };
 		556D82D33DA8A505A137BD4A /* libPods-BeMyEyes Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03381774851623C2C6BE0645 /* libPods-BeMyEyes Tests.a */; };
+		578D76701BEB457F00358EC8 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 578D766F1BEB457F00358EC8 /* GLKit.framework */; };
+		578D76721BEB45B400358EC8 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 578D76711BEB45B400358EC8 /* VideoToolbox.framework */; };
 		57DB94FF1BE8BF59007A3C63 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB94FE1BE8BF59007A3C63 /* AnalyticsManager.swift */; };
 		57DB95011BE8C4C9007A3C63 /* ApplicationProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DB95001BE8C4C9007A3C63 /* ApplicationProperties.swift */; };
 		7206A76118FA9BF000251824 /* BMEPointLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7206A76018FA9BF000251824 /* BMEPointLabel.m */; };
@@ -1288,6 +1290,8 @@
 		4EFCE5871A55C57700FAE663 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4EFCE5881A55C57700FAE663 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/PostCallLocalizationTable.strings; sourceTree = "<group>"; };
 		541D916399355C19CD490FDC /* Pods-BeMyEyes Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BeMyEyes Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BeMyEyes Tests/Pods-BeMyEyes Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		578D766F1BEB457F00358EC8 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		578D76711BEB45B400358EC8 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		57DB94FE1BE8BF59007A3C63 /* AnalyticsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		57DB95001BE8C4C9007A3C63 /* ApplicationProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationProperties.swift; sourceTree = "<group>"; };
 		5DB997FFB6ADF4A3BE47FEBF /* Pods.releasedev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.releasedev.xcconfig; path = "Pods/Target Support Files/Pods/Pods.releasedev.xcconfig"; sourceTree = "<group>"; };
@@ -1497,6 +1501,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				578D76721BEB45B400358EC8 /* VideoToolbox.framework in Frameworks */,
+				578D76701BEB457F00358EC8 /* GLKit.framework in Frameworks */,
 				72B3C4BF1987D31D00A56D49 /* MediaPlayer.framework in Frameworks */,
 				72414AF2196A982D00A2C5F4 /* MessageUI.framework in Frameworks */,
 				72622FFC18BA27F8006F388C /* Accounts.framework in Frameworks */,
@@ -1615,6 +1621,8 @@
 		7236DFFC18B8A87B00F622AA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				578D76711BEB45B400358EC8 /* VideoToolbox.framework */,
+				578D766F1BEB457F00358EC8 /* GLKit.framework */,
 				72B3C4BE1987D31D00A56D49 /* MediaPlayer.framework */,
 				72414AF1196A982D00A2C5F4 /* MessageUI.framework */,
 				726D7B8F191A8583005690B7 /* libxml2.dylib */,
