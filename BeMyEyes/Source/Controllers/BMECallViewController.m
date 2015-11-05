@@ -424,10 +424,6 @@ static NSString *BMECallPostSegue = @"PostCall";
     NSLog(@"OpenTok: [Session] Stream created");
     if (!self.isDisconnecting)
     {
-        [self endTrackingRequestOrAnswerWithError:nil];
-        [AnalyticsManager beginTrackingEventWithType:AnalyticsEvent_Call];
-        _callInitiated = [NSDate new];
-        
         // Make sure we don't subscribe to our own stream
         if (![stream.connection.connectionId isEqualToString:session.connection.connectionId]) {
             NSLog(@"OpenTok: [Session] Subscribe to stream");
@@ -457,7 +453,8 @@ static NSString *BMECallPostSegue = @"PostCall";
 #pragma mark -
 #pragma mark Publisher Delegate
 
-- (void)publisher:(OTPublisherKit *)publisher streamCreated:(OTStream *)stream {
+- (void)publisher:(OTPublisherKit *)publisher streamCreated:(OTStream *)stream
+{
     NSLog(@"OpenTok: [Publisher] Stream created");
 }
 
@@ -478,8 +475,14 @@ static NSString *BMECallPostSegue = @"PostCall";
 #pragma mark -
 #pragma mark Subscriber Delegate
 
-- (void)subscriberDidConnectToStream:(OTSubscriberKit *)subscriber {
+- (void)subscriberDidConnectToStream:(OTSubscriberKit *)subscriber
+{
     NSLog(@"OpenTok: [Subscriber] Did connect to stream");
+    
+    [self endTrackingRequestOrAnswerWithError:nil];
+    [AnalyticsManager beginTrackingEventWithType:AnalyticsEvent_Call];
+    _callInitiated = [NSDate new];
+    
     [self hideStatus];
     
     if (!self.isDisconnecting) {
