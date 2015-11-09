@@ -23,6 +23,7 @@ supported_languages = {
   "sv" => "sv-SE",
   "tr" => "tr-TR",
   "vi" => "vi-VI",
+  "ja" => "ja-JA",
   "zh-Hans" => "cmn-Hans",
   "zh-Hant" => "cmn-Hant",
 }
@@ -45,7 +46,7 @@ base_keywords = "accessible, blind, impaired, help, vision, voiceover, volunteer
 keywords( hash_to_all_languages(base_language, base_keywords, supported_languages) )
 
 # CHANGELOG
-base_release_notes = "Updated video call framework to better support for iOS 9"
+base_release_notes = "Updated video call framework to better support iOS 9"
 release_notes( hash_to_all_languages(base_language, base_release_notes, supported_languages) )
 
 # DESCRIPTION

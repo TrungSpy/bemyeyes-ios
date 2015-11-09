@@ -105,7 +105,7 @@ lane :production do
     configuration: "Release",
   )
   deliver(
-    skip_deploy: true
+    
   )
   # slack(
   #   message: "New Production version pushed to App Store.",
