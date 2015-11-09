@@ -7,24 +7,24 @@
 base_language = "en-US"
 
 supported_languages = {
-  "da-DK" => "da",
-  "de-DE" => "de",
-  "el-GR" => "el",
-  "es-ES" => "es",
-  "fi-FI" => "fi",
-  "fr-FR" => "fr",
-  "it-IT" => "it",
-  "ko-KR" => "ko",
-  "nl-NL" => "nl",
-  "no-NO" => "nb",
+  "da" => "da-DK",
+  "de-DE" => "de-DE",
+  "el" => "el-GR",
+  "es-ES" => "es-ES",
+  "fi" => "fi-FI",
+  "fr-FR" => "fr-FR",
+  "it" => "it-IT",
+  "ko" => "ko-KR",
+  "nl-NL" => "nl-NL",
+  "no" => "no-NO",
   "pt-BR" => "pt-BR",
-  "pt-PT" => "pt",
-  "ru-RU" => "ru",
-  "sv-SE" => "sv",
-  "tr-TR" => "tr",
-  "vi-VI" => "vi",
-  "cmn-Hans" => "zh-Hans",
-  "cmn-Hant" => "zh-Hant",
+  "pt-PT" => "pt-PT",
+  "ru" => "ru-RU",
+  "sv" => "sv-SE",
+  "tr" => "tr-TR",
+  "vi" => "vi-VI",
+  "zh-Hans" => "cmn-Hans",
+  "zh-Hant" => "cmn-Hant",
 }
 
 def hash_to_all_languages(base_key, base_value, all_keys)
@@ -45,7 +45,7 @@ base_keywords = "accessible, blind, impaired, help, vision, voiceover, volunteer
 keywords( hash_to_all_languages(base_language, base_keywords, supported_languages) )
 
 # CHANGELOG
-base_release_notes = "Added support for iOS 9"
+base_release_notes = "Updated video call framework to better support for iOS 9"
 release_notes( hash_to_all_languages(base_language, base_release_notes, supported_languages) )
 
 # DESCRIPTION
