@@ -17,6 +17,7 @@
 #import <Crashlytics/Crashlytics.h>
 #import "BMETopNavigationController.h"
 
+
 @interface BMEAppDelegate () <UIAlertViewDelegate>
 @property (strong, nonatomic) PSPDFAlertView *callAlertView;
 @property (strong, nonatomic) BMECallAudioPlayer *callAudioPlayer;
@@ -30,29 +31,37 @@
 #pragma mark -
 #pragma mark Lifecycle
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    /* Environment */
-    // BundleId: Production / Staging / Development
-    NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-    NSLog(@"%@", bundleId);
-    BOOL isProduction = [bundleId isEqualToString:BMEBundleIdProduction];
-    BOOL isStaging = [bundleId isEqualToString:BMEBundleIdStaging];
-    BOOL isDevelopment = [bundleId isEqualToString:BMEBundleIdDevelopment];
-    if (isProduction) {
-        [GVUserDefaults standardUserDefaults].api = BMESettingsAPIPublic;
-        NSLog(@"API: Production");
-    } else if (isStaging) {
-        [GVUserDefaults standardUserDefaults].api = BMESettingsAPIStaging;
-        NSLog(@"API: Staging");
-    } else if (isDevelopment) {
-        NSLog(@"API: Development");
-        [GVUserDefaults standardUserDefaults].api = BMESettingsAPIDevelopment;
-    } else {
-        NSLog(@"Wrong bundle id: %@. Fallback to Development", bundleId);
-        [GVUserDefaults standardUserDefaults].api = BMESettingsAPIDevelopment;
-        isDevelopment = YES;
-    }
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    // Environment
+    BOOL isStaging = NO;
+    BOOL isDevelopment = NO;
     
+    switch ([ApplicationProperties environment])
+    {
+        case ApplicationEnvironmentProduction:
+            [GVUserDefaults standardUserDefaults].api = BMESettingsAPIPublic;
+            NSLog(@"API: Production");
+            break;
+            
+        case ApplicationEnvironmentStaging:
+            isStaging = YES;
+            [GVUserDefaults standardUserDefaults].api = BMESettingsAPIStaging;
+            NSLog(@"API: Staging");
+            break;
+            
+        case ApplicationEnvironmentDevelopment:
+            isDevelopment = YES;
+            NSLog(@"API: Development");
+            [GVUserDefaults standardUserDefaults].api = BMESettingsAPIDevelopment;
+            break;
+            
+        default:
+            NSLog(@"Unable to determine app environment. Fallback to Development");
+            [GVUserDefaults standardUserDefaults].api = BMESettingsAPIDevelopment;
+            isDevelopment = YES;
+            break;
+    }
     
     // Provisioning: Production / Development
     BOOL isDebug;
@@ -184,6 +193,7 @@
                 }];
                 [self.callAlertView setCancelButtonWithTitle:cancelButton block:^{
                     [weakSelf stopCallTone];
+                    [AnalyticsManager trackEvent:AnalyticsEvent_Sighted_RefusedToAnswer withProperties:nil];
                 }];
                 [self.callAlertView show];
             }
@@ -289,6 +299,8 @@
         NSLog(@"No user");
         [self showFrontPage];
     }
+    
+    [AnalyticsManager identifyUser:[BMEClient sharedClient].currentUser];
 }
 
 - (void)loginFailed {

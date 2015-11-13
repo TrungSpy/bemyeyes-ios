@@ -92,6 +92,8 @@
             [progressOverlayView hide:YES];
             if (success && !error) {
                 [self didLogin];
+                
+                [AnalyticsManager trackSignupWithType:SignupType_Email];
             } else {
                 if ([error code] == BMEClientErrorUserEmailAlreadyRegistered) {
                     NSString *title = MKLocalizedFromTable(BME_SIGN_UP_ALERT_EMAIL_ALREADY_REGISTERED_TITLE, BMESignUpLocalizationTable);

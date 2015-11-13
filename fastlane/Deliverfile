@@ -2,69 +2,71 @@
 # DON'T Update the app description and metadata in the ./metadata folder
 # Use direct metadata set from this ruby file
 
-default_language "en-US"
+# default_language "en-US"
 
-baseLanguage = "en-US"
+base_language = "en-US"
 
-supportedLanguages = {
-  "da-DK" => "da",
-  "de-DE" => "de",
-  "el-GR" => "el",
-  "es-ES" => "es",
-  "fi-FI" => "fi",
-  "fr-FR" => "fr",
-  "it-IT" => "it",
-  "ko-KR" => "ko",
-  "nl-NL" => "nl",
-  "no-NO" => "nb",
+supported_languages = {
+  "da" => "da-DK",
+  "de-DE" => "de-DE",
+  "el" => "el-GR",
+  "es-ES" => "es-ES",
+  "fi" => "fi-FI",
+  "fr-FR" => "fr-FR",
+  "it" => "it-IT",
+  "ko" => "ko-KR",
+  "nl-NL" => "nl-NL",
+  "no" => "no-NO",
   "pt-BR" => "pt-BR",
-  "pt-PT" => "pt",
-  "ru-RU" => "ru",
-  "sv-SE" => "sv",
-  "tr-TR" => "tr",
-  "vi-VI" => "vi",
-  "cmn-Hans" => "zh-Hans",
-  "cmn-Hant" => "zh-Hant",
+  "pt-PT" => "pt-PT",
+  "ru" => "ru-RU",
+  "sv" => "sv-SE",
+  "tr" => "tr-TR",
+  "vi" => "vi-VI",
+  "ja" => "ja-JA",
+  "zh-Hans" => "cmn-Hans",
+  "zh-Hant" => "cmn-Hant",
 }
 
-def hashToAllLanguages(baseKey, baseValue, allKeys)
-  hashey = { baseKey => baseValue }
-  allKeys.each { |key, value|
-    hashey[key] = baseValue
+def hash_to_all_languages(base_key, base_value, all_keys)
+  hashey = { base_key => base_value }
+  all_keys.each { |key, value|
+    hashey[key] = base_value
   }
   return hashey
 end
 
 # TITLE
-baseTitle = ENV["BME_APP_TITLE"] # Environment variable is set in the 'Fastfile'
-title(hashToAllLanguages(baseLanguage, baseTitle, supportedLanguages))
+base_title = ENV["BME_APP_TITLE"] # Environment variable is set in the 'Fastfile'
+#title(hashToAllLanguages(baseLanguage, baseTitle, supportedLanguages))
+name( hash_to_all_languages(base_language, base_title, supported_languages) )
 
 # KEYWORDS
-baseKeywords = [ "accessible", "blind", "impaired", "help", "vision", "voiceover", "volunteer", "bemyeyes", "taptapsee"]
-keywords(hashToAllLanguages(baseLanguage, baseKeywords, supportedLanguages))
+base_keywords = "accessible, blind, impaired, help, vision, voiceover, volunteer, bemyeyes, taptapsee"
+keywords( hash_to_all_languages(base_language, base_keywords, supported_languages) )
 
 # CHANGELOG
-baseChangelog = "Added languages Thai, Afrikaans, Azerbaijani, Catalan, Estonian, Lithuanian."
-changelog(hashToAllLanguages(baseLanguage, baseChangelog, supportedLanguages))
+base_release_notes = "Updated video call framework to better support iOS 9"
+release_notes( hash_to_all_languages(base_language, base_release_notes, supported_languages) )
 
 # DESCRIPTION
-descriptionHash = { 
-  baseLanguage => "Be the eyes for a blind person in need of help remotely through a live video connection if you are sighted or be assisted by the network of sighted users if you are blind.\n\nBe My Eyes is all about contributing to and benefiting from small acts of kindness, so hop on board and get involved!\n\nBlind users can request help from a sighted person and the sighted users will then be called for help. As soon as the first sighted user accepts the request for help a live audio-video connection will be set up between the two and the sighted user can tell the blind person what she sees when the blind user points his phone at something using the rear-facing camera.\n\nAs a sighted user you don't need to worry about missing a call and 'leave a blind person hanging' - you are a part of the bigger Be My Eyes helper-network and we will find the next available sighted person in the network. The challenges that the blind person needs help with can be anything from knowing the expiry date on the milk to getting help crossing the street.\n\nNote: We encourage blind users to be patient when requesting help because we rely on real people to help you.\n\n- Live audio-video connection between blind and sighted users\n- Add the languages you know under settings\n- An easy way you can make a difference for blind people" 
+description_hash = {
+  base_language => "Be the eyes for a blind person in need of help remotely through a live video connection if you are sighted or be assisted by the network of sighted users if you are blind.\n\nBe My Eyes is all about contributing to and benefiting from small acts of kindness, so hop on board and get involved!\n\nBlind users can request help from a sighted person and the sighted users will then be called for help. As soon as the first sighted user accepts the request for help a live audio-video connection will be set up between the two and the sighted user can tell the blind person what she sees when the blind user points his phone at something using the rear-facing camera.\n\nAs a sighted user you don't need to worry about missing a call and 'leave a blind person hanging' - you are a part of the bigger Be My Eyes helper-network and we will find the next available sighted person in the network. The challenges that the blind person needs help with can be anything from knowing the expiry date on the milk to getting help crossing the street.\n\nNote: We encourage blind users to be patient when requesting help because we rely on real people to help you.\n\n- Live audio-video connection between blind and sighted users\n- Add the languages you know under settings\n- An easy way you can make a difference for blind people"
 }
-supportedLanguages.each { |key, value|
+supported_languages.each { |key, value|
   filename = "../BeMyEyes/Localization/AppStoreDescriptions/" + value + ".lproj/AppStore.txt"
-  descriptionHash[key] = File.file?(filename) ? File.read(filename) : descriptionHash[baseLanguage]
+  description_hash[key] = File.file?(filename) ? File.read(filename) : description_hash[base_language]
 }
-description(descriptionHash)
+description(description_hash)
 
 
 ###################### Screenshots ######################
 # Store all screenshots in the ./screenshots folder separated
 # by language. If you use snapshot, this happens automatically
 
-# Copy baseLanugage screenshots to the rest of the languages
-supportedLanguages.each { |key, value|
-  FileUtils.cp_r "./screenshots/" + baseLanguage + "/.", "./screenshots/" + key
-}
+# Copy base_language screenshots to the rest of the languages
+#supported_languages.each { |key, value|
+# FileUtils.cp_r "./screenshots/" + base_language + "/.", "./screenshots/" + key
+#}
 
-screenshots_path "./screenshots/"
+#screenshots_path "./screenshots/"

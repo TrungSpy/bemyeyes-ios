@@ -10,8 +10,8 @@
 fastlane_version "1.0.0"
 
 before_all do
-  slack_url = get_global_value(key: "BMESlackUrl")
-  ENV["SLACK_URL"] = slack_url
+  #slack_url = get_global_value(key: "BMESlackUrl")
+  #ENV["SLACK_URL"] = slack_url
   ENV["BME_APP_TITLE"] = "Be My Eyes – Helping blind see"
 end
 
@@ -57,60 +57,60 @@ lane :translate do
 end
 
 lane :beta_dev do
-  ipa(
+  gym(
     scheme: "BeMyEyes Development",
     configuration: "ReleaseDev",
   )
   ENV["BME_APP_TITLE"] = "Be My Eyes – Alpha"
-  deliver(beta: true)
+  deliver(force: true)
   
-  slack(
-    message: "New Development (Alpha) version pushed to TestFlight.",
-    default_payloads: [:git_branch, :git_author]
-  )
+  #slack(
+  #  message: "New Development (Alpha) version pushed to TestFlight.",
+  #  default_payloads: [:git_branch, :git_author]
+  #)
 end
 
 lane :beta_staging do
-  ipa(
+  gym(
     scheme: "BeMyEyes Staging",
     configuration: "ReleaseStaging",
   )
   ENV["BME_APP_TITLE"] = "Be My Eyes – Beta"
   deliver(
-     beta: true
+     force: true
   )
-  slack(
-    message: "New Staging (Beta) version pushed to TestFlight.",
-    default_payloads: [:git_branch, :git_author]
-  )
+  #slack(
+  #  message: "New Staging (Beta) version pushed to TestFlight.",
+  #  default_payloads: [:git_branch, :git_author]
+  #)
 end
 
 lane :beta_production do
-  ipa(
+  gym(
     scheme: "BeMyEyes",
     configuration: "Release",
   )
   deliver(
-    beta: true
+    force: true
   )
-  slack(
-    message: "New Production version pushed to TestFlight.",
-    default_payloads: [:git_branch, :git_author]
-  )
+  # slack(
+  #   message: "New Production version pushed to TestFlight.",
+  #   default_payloads: [:git_branch, :git_author]
+  # )
 end
 
 lane :production do
-  ipa(
+  gym(
     scheme: "BeMyEyes",
     configuration: "Release",
   )
   deliver(
-    skip_deploy: true
+    
   )
-  slack(
-    message: "New Production version pushed to App Store.",
-    default_payloads: [:git_branch, :git_author]
-  )
+  # slack(
+  #   message: "New Production version pushed to App Store.",
+  #   default_payloads: [:git_branch, :git_author]
+  # )
 end
 
 

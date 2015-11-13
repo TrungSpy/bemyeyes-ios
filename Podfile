@@ -19,8 +19,9 @@ target :BeMyEyes do
     pod 'FormatterKit', '~> 1.7.1'
     pod 'KeepLayout', :git => 'https://github.com/iMartinKiss/KeepLayout.git'
     pod 'CrashlyticsFramework'
-    pod 'SDWebImage', '~>3.6'
+    pod 'SDWebImage', '~> 3.6'
     pod 'Reveal-iOS-SDK', :configurations => ['Debug']
+    pod 'Mixpanel', '~> 2.9.0'
     
     target 'BeMyEyes Tests', :exclusive => true do
        pod 'FBSnapshotTestCase/Core'
