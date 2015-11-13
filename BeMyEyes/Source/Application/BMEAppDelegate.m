@@ -193,6 +193,7 @@
                 }];
                 [self.callAlertView setCancelButtonWithTitle:cancelButton block:^{
                     [weakSelf stopCallTone];
+                    [AnalyticsManager trackEvent:AnalyticsEvent_Sighted_RefusedToAnswer withProperties:nil];
                 }];
                 [self.callAlertView show];
             }

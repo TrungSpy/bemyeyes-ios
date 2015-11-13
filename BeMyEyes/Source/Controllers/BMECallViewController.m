@@ -121,13 +121,17 @@ static NSString *BMECallPostSegue = @"PostCall";
 #pragma mark -
 #pragma mark Private Methods
 
-- (IBAction)cancelButtonPressed:(id)sender {
+- (IBAction)cancelButtonPressed:(id)sender
+{
+    [self endTrackingRequestOrAnswerWithError:[[NSError alloc] initWithDomain:@"BeMyEyes" code:-1 userInfo:@{@"cause": @"User cancelled request"}]];
+    
     NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_DISCONNECTING, BMECallLocalizationTable);
     [self changeStatus:statusText];
     [self disconnectWithError:nil];
 }
 
-- (void)createNewRequest {
+- (void)createNewRequest
+{
     NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_CREATING_REQUEST, BMECallLocalizationTable);
     [self changeStatus:statusText];
     
@@ -157,7 +161,8 @@ static NSString *BMECallPostSegue = @"PostCall";
      }];
 }
 
-- (void)answerRequestWithShortId:(NSString *)shortId {
+- (void)answerRequestWithShortId:(NSString *)shortId
+{
     NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_ANSWERING_REQUEST, BMECallLocalizationTable);
     [self changeStatus:statusText];
     

@@ -20,6 +20,7 @@ import Foundation
     
     // Sigthed:
     case _Sighted_Answer
+    case _Sighted_RefusedToAnswer
     
     // Blind:
     case _Blind_Request
@@ -211,17 +212,18 @@ import Foundation
     {
         switch (event)
         {
-        case ._TestEvent:       return "TestEvent"
+        case ._TestEvent:               return "TestEvent"
             
         // General:
-        case ._Signup:          return "Signup"
-        case ._Call:            return "Call"
+        case ._Signup:                  return "Signup"
+        case ._Call:                    return "Call"
             
         // Sigthed:
-        case ._Sighted_Answer:  return "Answer"
+        case ._Sighted_Answer:          return "Answer"
+        case ._Sighted_RefusedToAnswer: return "Refused to answer"
             
         // Blind:
-        case ._Blind_Request:   return "Request"
+        case ._Blind_Request:           return "Request"
             
         }
     }
