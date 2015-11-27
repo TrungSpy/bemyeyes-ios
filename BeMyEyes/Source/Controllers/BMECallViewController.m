@@ -285,7 +285,8 @@ static NSString *BMECallPostSegue = @"PostCall";
     }
 }
 
-- (void)publish {
+- (void)publish
+{
     self.publisher = [[OTPublisher alloc] initWithDelegate:self name:[BMEClient sharedClient].currentUser.firstName];
     
     self.publisher.publishAudio = YES;
@@ -295,8 +296,14 @@ static NSString *BMECallPostSegue = @"PostCall";
         // Must set video capture async as of 2.4.0 due to regression bug in OpenTok
         BMEOpenTokVideoCapture *videoCapture = [BMEOpenTokVideoCapture new];
         self.publisher.videoCapture = videoCapture;
-        // Set camere position after setting video capture on 
+        
+        // Set camera position after setting video capture on
         videoCapture.cameraPosition = AVCaptureDevicePositionBack;
+        
+        if ([self isUserBlind])
+        {
+            self.publisher.view.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+        }
     });
     
     OTError *error = nil;
