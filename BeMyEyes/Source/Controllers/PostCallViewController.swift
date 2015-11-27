@@ -11,6 +11,8 @@ import UIKit
 class PostCallViewController: BMEBaseViewController, MKLocalizable {
     
     var requestIdentifier: String?
+    var sessionIdentifier: String?
+    
     private let reportAbuseSegue = "ReportAbuse"
     var user: BMEUser? = BMEClient.sharedClient().currentUser
     
@@ -60,6 +62,7 @@ class PostCallViewController: BMEBaseViewController, MKLocalizable {
             let vc = segue.destinationViewController as? BMEReportAbuseViewController
         {
             vc.requestIdentifier = self.requestIdentifier!
+            vc.sessionIdentifier = self.sessionIdentifier!
         }
     }
     

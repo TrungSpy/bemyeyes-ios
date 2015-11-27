@@ -40,12 +40,19 @@
 @end
 
 @implementation BMEReportAbuseViewController
+{
+    NSUInteger _selectedReason;
+}
+
 
 #pragma mark -
 #pragma mark Lifecycle
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
+    
+    _selectedReason = 0; // Means: none selected
     
     [MKLocalization registerForLocalization:self];
 }
@@ -128,17 +135,40 @@
     [alertView show];
 }
 
-- (void)reportAbuse {
+- (void)reportAbuse
+{
     MRProgressOverlayView *progressOverlayView = [MRProgressOverlayView showOverlayAddedTo:self.view.window animated:YES];
     progressOverlayView.mode = MRProgressOverlayViewModeIndeterminate;
     progressOverlayView.titleLabelText = MKLocalizedFromTable(BME_REPORT_ABUSE_OVERLAY_REPORTING_TITLE, BMEReportAbuseLocalizationTable);
     
-    [[BMEClient sharedClient] reportAbuseForRequestWithId:self.requestIdentifier reason:[self selectedReason] completion:^(BOOL success, NSError *error) {
+    [[BMEClient sharedClient] reportAbuseForRequestWithId:self.requestIdentifier reason:[self selectedReason] completion:^(BOOL success, NSError *error)
+    {
         [progressOverlayView hide:YES];
-        
-        if (!error) {
+
+        if (!error)
+        {
+            [AnalyticsManager
+             trackEvent:AnalyticsEvent_ReportAbuse
+             withProperties:@{
+                              AnalyticsManager.propertyKey_Reason: [self stringForReasonNumber:_selectedReason],
+                              AnalyticsManager.propertyKey_SessionId: [self sessionIdentifier]
+                              }
+             ];
+            
             [self dismiss];
-        } else {
+        }
+        else
+        {
+            [AnalyticsManager
+             trackEvent:AnalyticsEvent_ReportAbuseFailed
+             withProperties:@{
+                              AnalyticsManager.propertyKey_Reason: [self stringForReasonNumber:_selectedReason],
+                              AnalyticsManager.propertyKey_RequestId: [self requestIdentifier],
+                              AnalyticsManager.propertyKey_SessionId: [self sessionIdentifier],
+                              AnalyticsManager.propertyKey_Error: error
+                              }
+             ];
+            
             NSString *title = MKLocalizedFromTable(BME_REPORT_ABUSE_ALERT_REPORTING_FAILED_TITLE, BMEReportAbuseLocalizationTable);
             NSString *message = MKLocalizedFromTable(BME_REPORT_ABUSE_ALERT_REPORTING_FAILED_MESSAGE, BMEReportAbuseLocalizationTable);
             NSString *cancelButton = MKLocalizedFromTable(BME_REPORT_ABUSE_ALERT_REPORTING_FAILED_CANCEL, BMEReportAbuseLocalizationTable);
@@ -150,15 +180,54 @@
     }];
 }
 
-- (void)writeReasons {
+
+- (NSString*) stringForReasonNumber:(NSUInteger)number
+{
+    BOOL isBlind = ([BMEClient sharedClient].currentUser.role == BMERoleBlind);
+    if (isBlind)
+    {
+        switch (number)
+        {
+            case 1: return MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_1_BLIND, BMEReportAbuseLocalizationTable);
+            case 2: return MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_2_BLIND, BMEReportAbuseLocalizationTable);
+            case 3: return MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_3_BLIND, BMEReportAbuseLocalizationTable);
+
+            default:
+                NSLog(@"No such reason.");
+                return nil;
+        }
+    }
+    else
+    {
+        switch (number)
+        {
+            case 1: return MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_1_HELPER, BMEReportAbuseLocalizationTable);
+            case 2: return MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_2_HELPER, BMEReportAbuseLocalizationTable);
+            case 3: return MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_3_HELPER, BMEReportAbuseLocalizationTable);
+                
+            default:
+                NSLog(@"No such reason.");
+                return nil;
+        }
+    }
+    
+    return nil;
+}
+
+
+- (void) writeReasons
+{
     NSString *reason1, *reason2, *reason3;
     
     BOOL isBlind = ([BMEClient sharedClient].currentUser.role == BMERoleBlind);
-    if (isBlind) {
+    if (isBlind)
+    {
         reason1 = MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_1_BLIND, BMEReportAbuseLocalizationTable);
         reason2 = MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_2_BLIND, BMEReportAbuseLocalizationTable);
         reason3 = MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_3_BLIND, BMEReportAbuseLocalizationTable);
-    } else {
+    }
+    else
+    {
         reason1 = MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_1_HELPER, BMEReportAbuseLocalizationTable);
         reason2 = MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_2_HELPER, BMEReportAbuseLocalizationTable);
         reason3 = MKLocalizedFromTable(BME_REPORT_ABUSE_REPORT_TEXT_3_HELPER, BMEReportAbuseLocalizationTable);
@@ -177,7 +246,8 @@
     }
 }
 
-- (void)writeAccessibilityLabels {
+- (void)writeAccessibilityLabels
+{
     NSString *label1, *label2, *label3;
     
     if (self.reason1StateRadioButton.selected) {
@@ -203,12 +273,16 @@
     self.reason3Button.accessibilityLabel = label3;
 }
 
-- (void)selectReasonNumber:(NSUInteger)number {
+- (void)selectReasonNumber:(NSUInteger)number
+{
+    _selectedReason = number;
+    
     self.reason1StateRadioButton.selected = (number == 1);
     self.reason2StateRadioButton.selected = (number == 2);
     self.reason3StateRadioButton.selected = (number == 3);
     
-    if (![self.reportButton isEnabled]) {
+    if (![self.reportButton isEnabled])
+    {
         self.reportButton.enabled = YES;
         [self.reportButton setBackgroundColor:[UIColor colorWithRed:235.0f/255.0f green:96.0f/255.0f blue:51.0f/255.0f alpha:1.0f]];
     }
@@ -216,7 +290,8 @@
     [self writeAccessibilityLabels];
 }   
 
-- (NSString *)selectedReason {
+- (NSString *)selectedReason
+{
     NSString *reason = nil;
     if (self.reason1StateRadioButton.selected) {
         reason = self.reason1Label.text;

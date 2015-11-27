@@ -18,7 +18,12 @@ import Foundation
     case _Signup
     case _Call
     
+    case _ReportAbuse
+    case _ReportAbuseFailed
+    
     // Sigthed:
+    case _Sighted_AttemptsToAnswerFromOpenApp
+    case _Sighted_AttemptsToAnswerFromClosedApp
     case _Sighted_Answer
     case _Sighted_RefusedToAnswer
     
@@ -36,6 +41,14 @@ import Foundation
 
 @objc class AnalyticsManager: NSObject
 {
+    // Keys for tracked properties:
+    static let propertyKey_RequestId =  "Request Id"
+    static let propertyKey_SessionId =  "Session Id"
+    static let propertyKey_Result =     "Result"
+    static let propertyKey_Reason =     "Reason"
+    static let propertyKey_Error =      "Error"
+    
+    
     // MARK: - The methods to actually use from outside:
     
     static func identifyUser(user: BMEUser?)
@@ -206,25 +219,27 @@ import Foundation
     }
     
     
-    
-    
     private class func stringForAnalyticsEvent(event: AnalyticsEvent) -> String
     {
         switch (event)
         {
-        case ._TestEvent:               return "TestEvent"
+        case ._TestEvent:                               return "TestEvent"
             
         // General:
-        case ._Signup:                  return "Signup"
-        case ._Call:                    return "Call"
+        case ._Signup:                                  return "Signup"
+        case ._Call:                                    return "Call"
+           
+        case ._ReportAbuse:                             return "Report abuse"
+        case ._ReportAbuseFailed:                       return "Report abuse failed"
             
         // Sigthed:
-        case ._Sighted_Answer:          return "Answer"
-        case ._Sighted_RefusedToAnswer: return "Refused to answer"
+        case ._Sighted_AttemptsToAnswerFromOpenApp:     return "Attempts answer from open app"
+        case ._Sighted_AttemptsToAnswerFromClosedApp:   return "Attempts answer from closed app"
+        case ._Sighted_RefusedToAnswer:                 return "Refused to answer"
+        case ._Sighted_Answer:                          return "Answer"
             
         // Blind:
-        case ._Blind_Request:           return "Request"
-            
+        case ._Blind_Request:                           return "Request"
         }
     }
     
@@ -232,7 +247,7 @@ import Foundation
     {
         switch (type)
         {
-            case ._Email:   return "Email"
+            case ._Email:     return "Email"
             case ._Facebook:  return "Facebook"
         }
     }
