@@ -72,6 +72,11 @@ static NSString* signalValueOff = @"off";
     _toggleTorchButton.hidden = true;
     _expectedTorchStateOn = false;
     
+    _toggleTorchButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    _toggleTorchButton.layer.borderWidth = 1;
+    _toggleTorchButton.cornerRadius = 5;
+    
+    
     [MKLocalization registerForLocalization:self];
     
     self.statusLabel.text = MKLocalizedFromTable(BME_CALL_STATUS_PLEASE_WAIT, BMECallLocalizationTable);
@@ -157,7 +162,7 @@ static NSString* signalValueOff = @"off";
      ];
     
     _expectedTorchStateOn = !_expectedTorchStateOn;
-    UIImage* image = [UIImage imageNamed:(_expectedTorchStateOn ? @"Flashlight_Off" : @"Flashlight_Off")];
+    UIImage* image = [UIImage imageNamed:(_expectedTorchStateOn ? @"Flashlight_Off" : @"Flashlight_On")];
     [_toggleTorchButton setImage:image forState:UIControlStateNormal];
     
     OTError* error;
