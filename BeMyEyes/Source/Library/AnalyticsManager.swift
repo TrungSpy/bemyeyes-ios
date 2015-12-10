@@ -26,9 +26,11 @@ import Foundation
     case _Sighted_AttemptsToAnswerFromClosedApp
     case _Sighted_Answer
     case _Sighted_RefusedToAnswer
+    case _Sighted_RequestToggleTorch
     
     // Blind:
     case _Blind_Request
+    case _Blind_ToggledTorch
 }
 
 @objc enum SignupType: Int
@@ -46,6 +48,7 @@ import Foundation
     static let propertyKey_SessionId =  "Session Id"
     static let propertyKey_Result =     "Result"
     static let propertyKey_Reason =     "Reason"
+    static let propertyKey_Value =      "Value"
     static let propertyKey_Error =      "Error"
     
     
@@ -237,9 +240,11 @@ import Foundation
         case ._Sighted_AttemptsToAnswerFromClosedApp:   return "Attempts answer from closed app"
         case ._Sighted_RefusedToAnswer:                 return "Refused to answer"
         case ._Sighted_Answer:                          return "Answer"
+        case ._Sighted_RequestToggleTorch:              return "Request torch toggle"
             
         // Blind:
         case ._Blind_Request:                           return "Request"
+        case ._Blind_ToggledTorch:                      return "Torch toggled"
         }
     }
     

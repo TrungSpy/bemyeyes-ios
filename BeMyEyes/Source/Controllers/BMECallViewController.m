@@ -24,6 +24,9 @@ static NSString *BMECallPostSegue = @"PostCall";
 
 // Signals to send over the OpenTok session:
 static NSString* signalTypeTorch = @"torch";
+static NSString* signalTypeRequestVersion = @"request_version";
+static NSString* signalTypeProvideVersion = @"provide_version";
+
 static NSString* signalValueOn = @"on";
 static NSString* signalValueOff = @"off";
 
@@ -172,6 +175,13 @@ static NSString* signalValueOff = @"off";
      connection:self.connection
      error:&error
     ];
+    
+    [AnalyticsManager
+     trackEvent:AnalyticsEvent_Sighted_RequestToggleTorch
+     withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId,
+                      AnalyticsManager.propertyKey_Value: (_expectedTorchStateOn ? signalValueOn : signalValueOff)
+                      }
+     ];
 }
 
 - (IBAction)cancelButtonPressed:(id)sender
@@ -357,10 +367,6 @@ static NSString* signalValueOff = @"off";
         {
             self.publisher.view.transform = CGAffineTransformMakeScale(-1.0, 1.0);
         }
-        else
-        {
-            _toggleTorchButton.hidden = false;
-        }
     });
     
     OTError *error = nil;
@@ -469,23 +475,62 @@ static NSString* signalValueOff = @"off";
     self.connection = theConnection;
 }
 
+// Requester and helper communicate over the OpenTok socket connection. Incomming transmissions are handled here:
 - (void) session:(OTSession *)session receivedSignalType:(NSString *)type fromConnection:(OTConnection *)connection withString:(NSString *)string
 {
-    if ([type isEqualToString:signalTypeTorch])
+    // Be very carefull about handling these
+    // - the sender of a signal also receives it, so keep blind/sighted clearly separated, untill communication is labelled better.
+    
+    if ([self isUserBlind])
     {
-        if ([string isEqualToString:signalValueOn])
+        if ([type isEqualToString:signalTypeTorch])
         {
-            NSLog(@"Turn torch on");
-            [self setTorchMode:AVCaptureTorchModeOn];
+            // Helper wishes to toggle blind person's torch:
+            if ([string isEqualToString:signalValueOn])
+            {
+                NSLog(@"Turn torch on");
+                [self setTorchMode:AVCaptureTorchModeOn];
+            }
+            else if ([string isEqualToString:signalValueOff])
+            {
+                NSLog(@"Turn torch off");
+                [self setTorchMode:AVCaptureTorchModeOff];
+            }
+            else
+            {
+                NSLog(@"Unrecognized signal");
+            }
+            
+            return;
         }
-        else if ([string isEqualToString:signalValueOff])
+        
+        if ([type isEqualToString:signalTypeRequestVersion])
         {
-            NSLog(@"Turn torch off");
-            [self setTorchMode:AVCaptureTorchModeOff];
+            // Helper has requested blind person for app version:
+            NSString* build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+            
+            OTError* error;
+            [_session
+             signalWithType:signalTypeProvideVersion
+             string: build
+             connection:self.connection
+             error:&error
+             ];
+            
+            return;
         }
-        else
+    }
+    else
+    {
+        // Sighted:
+        if ([type isEqualToString:signalTypeProvideVersion])
         {
-            NSLog(@"Unrecognized signal");
+            // Reply for request about other person's app version number:
+            int buildNumber = [string intValue];
+            if (buildNumber >= 66)
+            {
+                _toggleTorchButton.hidden = false;
+            }
         }
     }
 }
@@ -502,6 +547,13 @@ static NSString* signalValueOff = @"off";
         {
             [flashLight setTorchMode:mode];
             [flashLight unlockForConfiguration];
+            
+            [AnalyticsManager
+             trackEvent:AnalyticsEvent_Blind_ToggledTorch
+             withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId,
+                              AnalyticsManager.propertyKey_Value: (_expectedTorchStateOn ? signalValueOn : signalValueOff)
+                              }
+             ];
         }
         else
         {
@@ -520,6 +572,17 @@ static NSString* signalValueOff = @"off";
         NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_CONNECTION_ESTABLISHED, BMECallLocalizationTable);
         [self changeStatus:statusText];
         [self publish];
+        
+        if (![self isUserBlind])
+        {
+            OTError* error;
+            [_session
+             signalWithType:signalTypeRequestVersion
+             string: @""
+             connection:self.connection
+             error:&error
+             ];
+        }
     }
 }
 
