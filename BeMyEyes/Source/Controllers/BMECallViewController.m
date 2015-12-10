@@ -551,7 +551,7 @@ static NSString* signalValueOff = @"off";
             [AnalyticsManager
              trackEvent:AnalyticsEvent_Blind_ToggledTorch
              withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId,
-                              AnalyticsManager.propertyKey_Value: (_expectedTorchStateOn ? signalValueOn : signalValueOff)
+                              AnalyticsManager.propertyKey_Value: (mode == AVCaptureTorchModeOn ? signalValueOn : signalValueOff)
                               }
              ];
         }

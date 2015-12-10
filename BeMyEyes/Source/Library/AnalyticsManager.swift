@@ -184,7 +184,7 @@ import Foundation
     
     private func trackEvent(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
     {
-        if (_pendingTimedEvents.contains(event))
+        if (eventIsPending(event))
         {
             AnalyticsManager.LogWhite("---- Ending a timed event (\(AnalyticsManager.stringForAnalyticsEvent(event))) with trackEvent... Mistake?")
             _pendingTimedEvents.removeAtIndex(_pendingTimedEvents.indexOf(event)!)
@@ -198,7 +198,7 @@ import Foundation
     
     private func beginTrackingEventWithType(event: AnalyticsEvent)
     {
-        if (_pendingTimedEvents.contains(event))
+        if (eventIsPending(event))
         {
             AnalyticsManager.LogWhite("---- Already timing event of type \(AnalyticsManager.stringForAnalyticsEvent(event))")
             return
@@ -211,14 +211,50 @@ import Foundation
     
     private func endTrackingEventWithType(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
     {
-        if (!_pendingTimedEvents.contains(event))
+        if (!eventIsPending(event))
         {
-            AnalyticsManager.LogWhite("---- Ending a timed event (\(event)) that was not tracked...?")
+            AnalyticsManager.LogWhite("---- Ending a timed event (\(AnalyticsManager.stringForAnalyticsEvent(event))) that was not tracked...?")
             return
         }
         
-        _pendingTimedEvents.removeAtIndex(_pendingTimedEvents.indexOf(event)!)
+        AnalyticsManager.LogWhite("---- Ending timed event: \(AnalyticsManager.stringForAnalyticsEvent(event))")
+        removePendingEvent(event)
         trackEvent(event, withProperties: properties)
+    }
+    
+    func eventIsPending(event: AnalyticsEvent) -> Bool
+    {
+        for pendingEvent in _pendingTimedEvents
+        {
+            if (pendingEvent.rawValue == event.rawValue)
+            {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    func removePendingEvent(event: AnalyticsEvent)
+    {
+        var index: Int = 0
+        
+        var found = false
+        for pendingEvent in _pendingTimedEvents
+        {
+            if (pendingEvent.rawValue == event.rawValue)
+            {
+                found = true
+                break;
+            }
+            
+            index++
+        }
+        
+        if (found)
+        {
+            _pendingTimedEvents.removeAtIndex(index)
+        }
     }
     
     
