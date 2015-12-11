@@ -18,12 +18,19 @@ import Foundation
     case _Signup
     case _Call
     
+    case _ReportAbuse
+    case _ReportAbuseFailed
+    
     // Sigthed:
+    case _Sighted_AttemptsToAnswerFromOpenApp
+    case _Sighted_AttemptsToAnswerFromClosedApp
     case _Sighted_Answer
     case _Sighted_RefusedToAnswer
+    case _Sighted_RequestToggleTorch
     
     // Blind:
     case _Blind_Request
+    case _Blind_ToggledTorch
 }
 
 @objc enum SignupType: Int
@@ -36,6 +43,15 @@ import Foundation
 
 @objc class AnalyticsManager: NSObject
 {
+    // Keys for tracked properties:
+    static let propertyKey_RequestId =  "Request Id"
+    static let propertyKey_SessionId =  "Session Id"
+    static let propertyKey_Result =     "Result"
+    static let propertyKey_Reason =     "Reason"
+    static let propertyKey_Value =      "Value"
+    static let propertyKey_Error =      "Error"
+    
+    
     // MARK: - The methods to actually use from outside:
     
     static func identifyUser(user: BMEUser?)
@@ -168,7 +184,7 @@ import Foundation
     
     private func trackEvent(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
     {
-        if (_pendingTimedEvents.contains(event))
+        if (eventIsPending(event))
         {
             AnalyticsManager.LogWhite("---- Ending a timed event (\(AnalyticsManager.stringForAnalyticsEvent(event))) with trackEvent... Mistake?")
             _pendingTimedEvents.removeAtIndex(_pendingTimedEvents.indexOf(event)!)
@@ -182,7 +198,7 @@ import Foundation
     
     private func beginTrackingEventWithType(event: AnalyticsEvent)
     {
-        if (_pendingTimedEvents.contains(event))
+        if (eventIsPending(event))
         {
             AnalyticsManager.LogWhite("---- Already timing event of type \(AnalyticsManager.stringForAnalyticsEvent(event))")
             return
@@ -195,36 +211,76 @@ import Foundation
     
     private func endTrackingEventWithType(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
     {
-        if (!_pendingTimedEvents.contains(event))
+        if (!eventIsPending(event))
         {
-            AnalyticsManager.LogWhite("---- Ending a timed event (\(event)) that was not tracked...?")
+            AnalyticsManager.LogWhite("---- Ending a timed event (\(AnalyticsManager.stringForAnalyticsEvent(event))) that was not tracked...?")
             return
         }
         
-        _pendingTimedEvents.removeAtIndex(_pendingTimedEvents.indexOf(event)!)
+        AnalyticsManager.LogWhite("---- Ending timed event: \(AnalyticsManager.stringForAnalyticsEvent(event))")
+        removePendingEvent(event)
         trackEvent(event, withProperties: properties)
     }
     
+    func eventIsPending(event: AnalyticsEvent) -> Bool
+    {
+        for pendingEvent in _pendingTimedEvents
+        {
+            if (pendingEvent.rawValue == event.rawValue)
+            {
+                return true
+            }
+        }
+        
+        return false
+    }
     
+    func removePendingEvent(event: AnalyticsEvent)
+    {
+        var index: Int = 0
+        
+        var found = false
+        for pendingEvent in _pendingTimedEvents
+        {
+            if (pendingEvent.rawValue == event.rawValue)
+            {
+                found = true
+                break;
+            }
+            
+            index++
+        }
+        
+        if (found)
+        {
+            _pendingTimedEvents.removeAtIndex(index)
+        }
+    }
     
     
     private class func stringForAnalyticsEvent(event: AnalyticsEvent) -> String
     {
         switch (event)
         {
-        case ._TestEvent:               return "TestEvent"
+        case ._TestEvent:                               return "TestEvent"
             
         // General:
-        case ._Signup:                  return "Signup"
-        case ._Call:                    return "Call"
+        case ._Signup:                                  return "Signup"
+        case ._Call:                                    return "Call"
+           
+        case ._ReportAbuse:                             return "Report abuse"
+        case ._ReportAbuseFailed:                       return "Report abuse failed"
             
         // Sigthed:
-        case ._Sighted_Answer:          return "Answer"
-        case ._Sighted_RefusedToAnswer: return "Refused to answer"
+        case ._Sighted_AttemptsToAnswerFromOpenApp:     return "Attempts answer from open app"
+        case ._Sighted_AttemptsToAnswerFromClosedApp:   return "Attempts answer from closed app"
+        case ._Sighted_RefusedToAnswer:                 return "Refused to answer"
+        case ._Sighted_Answer:                          return "Answer"
+        case ._Sighted_RequestToggleTorch:              return "Request torch toggle"
             
         // Blind:
-        case ._Blind_Request:           return "Request"
-            
+        case ._Blind_Request:                           return "Request"
+        case ._Blind_ToggledTorch:                      return "Torch toggled"
         }
     }
     
@@ -232,7 +288,7 @@ import Foundation
     {
         switch (type)
         {
-            case ._Email:   return "Email"
+            case ._Email:     return "Email"
             case ._Facebook:  return "Facebook"
         }
     }

@@ -3819,7 +3819,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(PROFILE_UDID)";
+				PROVISIONING_PROFILE = "1f24137c-850b-4165-9c15-b9745730a33d";
 				SWIFT_OBJC_BRIDGING_HEADER = "BeMyEyes/Source/BeMyEyes-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -3888,7 +3888,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(PROFILE_UDID)";
+				PROVISIONING_PROFILE = "a9b8bf0a-0178-459c-babf-901105d5001b";
 				SWIFT_OBJC_BRIDGING_HEADER = "BeMyEyes/Source/BeMyEyes-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -4252,7 +4252,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "$(PROFILE_UDID)";
+				PROVISIONING_PROFILE = "8f04b007-8f17-40a6-b793-5743e238d41b";
 				SWIFT_OBJC_BRIDGING_HEADER = "BeMyEyes/Source/BeMyEyes-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

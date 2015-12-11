@@ -99,9 +99,12 @@ static NSString *const BMELoginSegue = @"Login";
 
 - (IBAction)didTapBlind:(id)sender {
     
-    if (UIAccessibilityIsVoiceOverRunning()) {
+    if (UIAccessibilityIsVoiceOverRunning() || [ApplicationProperties environment] != ApplicationEnvironmentProduction)
+    {   // Only allow blind signup with voiceover active - or if in a development environment.
         [self performBlindSegue];
-    }else{
+    }
+    else
+    {
         PSTAlertController *controller =
         [PSTAlertController alertControllerWithTitle: MKLocalizedFromTable(BME_FRONT_PAGE_NO_VOICEOVER_ALERT_TITLE, BMEFrontPageLocalizationTable)
                                              message: MKLocalizedFromTable(BME_FRONT_PAGE_NO_VOICEOVER_ALERT_BODY, BMEFrontPageLocalizationTable)

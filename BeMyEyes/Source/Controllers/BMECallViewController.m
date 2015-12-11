@@ -18,13 +18,26 @@
 #import "BMECallAudioPlayer.h"
 #import "BMEOpenTokVideoCapture.h"
 
+
 static NSString *BMECallPostSegue = @"PostCall";
 
+
+// Signals to send over the OpenTok session:
+static NSString* signalTypeTorch = @"torch";
+static NSString* signalTypeRequestVersion = @"request_version";
+static NSString* signalTypeProvideVersion = @"provide_version";
+
+static NSString* signalValueOn = @"on";
+static NSString* signalValueOff = @"off";
+
+
 @interface BMECallViewController () <OTSessionDelegate, OTPublisherDelegate, OTSubscriberKitDelegate>
+
 @property (weak, nonatomic) IBOutlet UIView *videoContainerView;
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 @property (weak, nonatomic) IBOutlet Button *disconnectButton;
+@property (weak, nonatomic) IBOutlet UIButton *toggleTorchButton;
 
 @property (strong, nonatomic) NSString *requestIdentifier;
 @property (strong, nonatomic) NSString *sessionId;
@@ -33,6 +46,7 @@ static NSString *BMECallPostSegue = @"PostCall";
 @property (strong, nonatomic) OTSession *session;
 @property (strong, nonatomic) OTPublisher *publisher;
 @property (strong, nonatomic) OTSubscriber *subscriber;
+@property (strong, nonatomic) OTConnection* connection;
 @property (strong, nonatomic) UIView *videoView;
 
 @property (strong, nonatomic) BMECallAudioPlayer *callAudioPlayer;
@@ -40,11 +54,15 @@ static NSString *BMECallPostSegue = @"PostCall";
 @property (assign, nonatomic, getter = isDisconnecting) BOOL disconnecting;
 
 @property (assign, nonatomic, getter = shouldPresentReportAbuseWhenDismissing) BOOL presentReportAbuseWhenDismissing;
+
 @end
+
 
 @implementation BMECallViewController
 {
     NSDate* _callInitiated;
+    
+    BOOL _expectedTorchStateOn;
 }
 
 #pragma mark -
@@ -54,6 +72,14 @@ static NSString *BMECallPostSegue = @"PostCall";
 {
     [super viewDidLoad];
     
+    _toggleTorchButton.hidden = true;
+    _expectedTorchStateOn = false;
+    
+    _toggleTorchButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    _toggleTorchButton.layer.borderWidth = 1;
+    _toggleTorchButton.cornerRadius = 5;
+    
+    
     [MKLocalization registerForLocalization:self];
     
     self.statusLabel.text = MKLocalizedFromTable(BME_CALL_STATUS_PLEASE_WAIT, BMECallLocalizationTable);
@@ -62,9 +88,10 @@ static NSString *BMECallPostSegue = @"PostCall";
     _callInitiated = nil;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
-    
+
     [UIApplication sharedApplication].idleTimerDisabled = YES;
  
     if (self.callMode == BMECallModeCreate) {
@@ -120,6 +147,42 @@ static NSString *BMECallPostSegue = @"PostCall";
 
 #pragma mark -
 #pragma mark Private Methods
+
+
+- (IBAction)toggleTorchButtonPressed:(id)sender
+{
+    _toggleTorchButton.enabled = false;
+    _toggleTorchButton.alpha = 0.5;
+    
+    [UIView
+     animateWithDuration:1.0
+     animations:^{
+         _toggleTorchButton.alpha = 1.0;
+     }
+     completion:^(BOOL finished) {
+         _toggleTorchButton.enabled = true;
+     }
+     ];
+    
+    _expectedTorchStateOn = !_expectedTorchStateOn;
+    UIImage* image = [UIImage imageNamed:(_expectedTorchStateOn ? @"Flashlight_Off" : @"Flashlight_On")];
+    [_toggleTorchButton setImage:image forState:UIControlStateNormal];
+    
+    OTError* error;
+    [_session
+     signalWithType:signalTypeTorch
+     string:(_expectedTorchStateOn ? signalValueOn : signalValueOff)
+     connection:self.connection
+     error:&error
+    ];
+    
+    [AnalyticsManager
+     trackEvent:AnalyticsEvent_Sighted_RequestToggleTorch
+     withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId,
+                      AnalyticsManager.propertyKey_Value: (_expectedTorchStateOn ? signalValueOn : signalValueOff)
+                      }
+     ];
+}
 
 - (IBAction)cancelButtonPressed:(id)sender
 {
@@ -285,7 +348,8 @@ static NSString *BMECallPostSegue = @"PostCall";
     }
 }
 
-- (void)publish {
+- (void)publish
+{
     self.publisher = [[OTPublisher alloc] initWithDelegate:self name:[BMEClient sharedClient].currentUser.firstName];
     
     self.publisher.publishAudio = YES;
@@ -295,8 +359,14 @@ static NSString *BMECallPostSegue = @"PostCall";
         // Must set video capture async as of 2.4.0 due to regression bug in OpenTok
         BMEOpenTokVideoCapture *videoCapture = [BMEOpenTokVideoCapture new];
         self.publisher.videoCapture = videoCapture;
-        // Set camere position after setting video capture on 
+        
+        // Set camera position after setting video capture on
         videoCapture.cameraPosition = AVCaptureDevicePositionBack;
+        
+        if ([self isUserBlind])
+        {
+            self.publisher.view.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+        }
     });
     
     OTError *error = nil;
@@ -400,6 +470,100 @@ static NSString *BMECallPostSegue = @"PostCall";
 #pragma mark -
 #pragma mark Session Delegate
 
+- (void) session:(OTSession *)session connectionCreated:(OTConnection *)theConnection
+{
+    self.connection = theConnection;
+}
+
+// Requester and helper communicate over the OpenTok socket connection. Incomming transmissions are handled here:
+- (void) session:(OTSession *)session receivedSignalType:(NSString *)type fromConnection:(OTConnection *)connection withString:(NSString *)string
+{
+    // Be very carefull about handling these
+    // - the sender of a signal also receives it, so keep blind/sighted clearly separated, untill communication is labelled better.
+    
+    if ([self isUserBlind])
+    {
+        if ([type isEqualToString:signalTypeTorch])
+        {
+            // Helper wishes to toggle blind person's torch:
+            if ([string isEqualToString:signalValueOn])
+            {
+                NSLog(@"Turn torch on");
+                [self setTorchMode:AVCaptureTorchModeOn];
+            }
+            else if ([string isEqualToString:signalValueOff])
+            {
+                NSLog(@"Turn torch off");
+                [self setTorchMode:AVCaptureTorchModeOff];
+            }
+            else
+            {
+                NSLog(@"Unrecognized signal");
+            }
+            
+            return;
+        }
+        
+        if ([type isEqualToString:signalTypeRequestVersion])
+        {
+            // Helper has requested blind person for app version:
+            NSString* build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+            
+            OTError* error;
+            [_session
+             signalWithType:signalTypeProvideVersion
+             string: build
+             connection:self.connection
+             error:&error
+             ];
+            
+            return;
+        }
+    }
+    else
+    {
+        // Sighted:
+        if ([type isEqualToString:signalTypeProvideVersion])
+        {
+            // Reply for request about other person's app version number:
+            int buildNumber = [string intValue];
+            if (buildNumber >= 66)
+            {
+                _toggleTorchButton.hidden = false;
+            }
+        }
+    }
+}
+
+- (void) setTorchMode:(AVCaptureTorchMode)mode
+{
+    AVCaptureDevice* flashLight = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if (    [flashLight isTorchAvailable]
+        &&  [flashLight isTorchModeSupported:mode])
+    {
+        NSError* error;
+        BOOL success = [flashLight lockForConfiguration:&error];
+        if (success)
+        {
+            [flashLight setTorchMode:mode];
+            [flashLight unlockForConfiguration];
+            
+            [AnalyticsManager
+             trackEvent:AnalyticsEvent_Blind_ToggledTorch
+             withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId,
+                              AnalyticsManager.propertyKey_Value: (mode == AVCaptureTorchModeOn ? signalValueOn : signalValueOff)
+                              }
+             ];
+        }
+        else
+        {
+            // TODO: More handling
+            NSLog(@"Torch: Could not lock for configuration: %@", error);
+        }
+    }
+}
+
+
 - (void)sessionDidConnect:(OTSession *)session
 {
     NSLog(@"OpenTok: [Session] Did connect");
@@ -408,6 +572,17 @@ static NSString *BMECallPostSegue = @"PostCall";
         NSString *statusText = MKLocalizedFromTable(BME_CALL_STATUS_CONNECTION_ESTABLISHED, BMECallLocalizationTable);
         [self changeStatus:statusText];
         [self publish];
+        
+        if (![self isUserBlind])
+        {
+            OTError* error;
+            [_session
+             signalWithType:signalTypeRequestVersion
+             string: @""
+             connection:self.connection
+             error:&error
+             ];
+        }
     }
 }
 
@@ -519,10 +694,13 @@ static NSString *BMECallPostSegue = @"PostCall";
 #pragma mark -
 #pragma mark Segue
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:BMECallPostSegue]) {
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:BMECallPostSegue])
+    {
         PostCallViewController *postCallViewController = (PostCallViewController *)segue.destinationViewController;
         postCallViewController.requestIdentifier = self.requestIdentifier;
+        postCallViewController.sessionIdentifier = self.sessionId;
     }
 }
 
@@ -534,22 +712,22 @@ static NSString *BMECallPostSegue = @"PostCall";
     {
         if ([BMEClient sharedClient].currentUser.isBlind)
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Success"]}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId != nil ? self.sessionId : @"No session", AnalyticsManager.propertyKey_Result: [NSString stringWithFormat:@"Success"]}];
         }
         else
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Success"]}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId != nil ? self.sessionId : @"No session", AnalyticsManager.propertyKey_Result: [NSString stringWithFormat:@"Success"]}];
         }
     }
     else
     {
         if ([BMEClient sharedClient].currentUser.isBlind)
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Blind_Request withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId != nil ? self.sessionId : @"No session", AnalyticsManager.propertyKey_Result: [NSString stringWithFormat:@"Failure - %@", error]}];
         }
         else
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Sighted_Answer withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId != nil ? self.sessionId : @"No session", AnalyticsManager.propertyKey_Result: [NSString stringWithFormat:@"Failure - %@", error]}];
         }
     }
 }
@@ -563,7 +741,7 @@ static NSString *BMECallPostSegue = @"PostCall";
     
     if (error)
     {
-        [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": [NSString stringWithFormat:@"Failure - %@", error]}];
+        [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId != nil ? self.sessionId : @"No session", AnalyticsManager.propertyKey_Result: [NSString stringWithFormat:@"Failure - %@", error]}];
     }
     else
     {
@@ -571,11 +749,11 @@ static NSString *BMECallPostSegue = @"PostCall";
         
         if ([now timeIntervalSinceDate:_callInitiated] < 20)
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": @"Failure - call lasted less than 20 seconds"}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId != nil ? self.sessionId : @"No session", AnalyticsManager.propertyKey_Result: @"Failure - call lasted less than 20 seconds"}];
         }
         else
         {
-            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{@"Session Id": self.sessionId != nil ? self.sessionId : @"No session", @"Result": @"Success"}];
+            [AnalyticsManager endTrackingEventWithType:AnalyticsEvent_Call withProperties:@{AnalyticsManager.propertyKey_SessionId: self.sessionId != nil ? self.sessionId : @"No session", AnalyticsManager.propertyKey_Result: @"Success"}];
         }
     }
     _callInitiated = nil;

@@ -46,7 +46,7 @@ base_keywords = "accessible, blind, impaired, help, vision, voiceover, volunteer
 keywords( hash_to_all_languages(base_language, base_keywords, supported_languages) )
 
 # CHANGELOG
-base_release_notes = "Updated video call framework to better support iOS 9"
+base_release_notes = "The video preview at the blind person's phone is no longer mirrored. The helping person can now switch the blind person's flashlight on."
 release_notes( hash_to_all_languages(base_language, base_release_notes, supported_languages) )
 
 # DESCRIPTION

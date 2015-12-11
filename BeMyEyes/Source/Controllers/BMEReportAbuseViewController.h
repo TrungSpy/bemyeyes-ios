@@ -11,5 +11,6 @@
 @interface BMEReportAbuseViewController : BMEBaseViewController <MKLocalizable>
 
 @property (copy, nonatomic) NSString *requestIdentifier;
+@property (copy, nonatomic) NSString *sessionIdentifier;
 
 @end

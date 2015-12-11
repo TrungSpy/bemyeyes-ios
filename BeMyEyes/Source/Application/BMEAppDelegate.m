@@ -188,6 +188,7 @@
                 __weak typeof(self) weakSelf = self;
                 self.callAlertView = [[PSPDFAlertView alloc] initWithTitle:title message:message];
                 [self.callAlertView addButtonWithTitle:actionButton block:^{
+                    [AnalyticsManager trackEvent:AnalyticsEvent_Sighted_AttemptsToAnswerFromOpenApp withProperties:nil];
                     [weakSelf didAnswerCallWithShortId:shortId];
                     [weakSelf stopCallTone];
                 }];
@@ -208,6 +209,7 @@
             NSString *shortId = [alert objectForKey:@"short_id"];;
             if (shortId) {
                 // The app was launched from a remote notification that contained a short ID
+                [AnalyticsManager trackEvent:AnalyticsEvent_Sighted_AttemptsToAnswerFromClosedApp withProperties:nil];
                 self.launchedWithShortID = YES;
                 [self didAnswerCallWithShortId:shortId];
             }
