@@ -17,6 +17,8 @@ import Foundation
     // General:
     case _Signup
     case _Call
+    case _ArchivingStarted
+    case _ArchivingEnded
     
     case _ReportAbuse
     case _ReportAbuseFailed
@@ -46,6 +48,7 @@ import Foundation
     // Keys for tracked properties:
     static let propertyKey_RequestId =  "Request Id"
     static let propertyKey_SessionId =  "Session Id"
+    static let propertyKey_ArchiveId =  "Archive Id"
     static let propertyKey_Result =     "Result"
     static let propertyKey_Reason =     "Reason"
     static let propertyKey_Value =      "Value"
@@ -94,6 +97,8 @@ import Foundation
     
     private override init()
     {
+        //LELog.sharedInstance().token = "1a1e57de-ebd2-3605-8706-9845fe40529b"
+        
         if (ApplicationProperties.environment() == .Production)
         {
             Mixpanel.sharedInstanceWithToken(BMEMixpanelToken)
@@ -192,6 +197,9 @@ import Foundation
         
         AnalyticsManager.LogWhite("---- Track event: \(AnalyticsManager.stringForAnalyticsEvent(event)) - properties: \(properties)")
         Mixpanel.sharedInstance().track(AnalyticsManager.stringForAnalyticsEvent(event), properties: properties)
+        
+//        let log = LELog.sharedInstance()
+//        log.log("\(AnalyticsManager.stringForAnalyticsEvent(event)): \(properties)")
     }
     
     private var _pendingTimedEvents = [AnalyticsEvent]()
@@ -213,7 +221,7 @@ import Foundation
     {
         if (!eventIsPending(event))
         {
-            AnalyticsManager.LogWhite("---- Ending a timed event (\(AnalyticsManager.stringForAnalyticsEvent(event))) that was not tracked...?")
+            //AnalyticsManager.LogWhite("---- Ending a timed event (\(AnalyticsManager.stringForAnalyticsEvent(event))) that was not tracked...?")
             return
         }
         
@@ -267,6 +275,8 @@ import Foundation
         // General:
         case ._Signup:                                  return "Signup"
         case ._Call:                                    return "Call"
+        case ._ArchivingStarted:                        return "Archiving started"
+        case ._ArchivingEnded:                          return "Archiving ended"
            
         case ._ReportAbuse:                             return "Report abuse"
         case ._ReportAbuseFailed:                       return "Report abuse failed"

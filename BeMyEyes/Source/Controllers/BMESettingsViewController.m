@@ -72,6 +72,12 @@ static NSString *const testCallSegueIdentifier = @"TestCall";
     [self saveIfSettingChanged];
 }
 
+
+- (IBAction)deleteButtonClicked:(id)sender
+{
+    [[BMEClient sharedClient] deleteCurrentUser];
+}
+
 - (void)shouldLocalize {
     self.headlineLabel.text = MKLocalizedFromTable(BME_SETTINGS_HEADLINE, BMESettingsLocalizationTable);
     self.headlineLabel.accessibilityTraits = UIAccessibilityTraitHeader;
