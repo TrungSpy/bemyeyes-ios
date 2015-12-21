@@ -325,13 +325,13 @@ typedef NS_ENUM(NSInteger, BMESnoozeStep) {
     
     [self.pointsHelpedPersonsLabel setPoint:user.peopleHelped.integerValue animated:animated];
     NSString *helpedAccessibilityText =
-    [NSString stringWithFormat: @"%i %@",self.pointsHelpedPersonsLabel.point,
+    [NSString stringWithFormat: @"%li %@",(long)self.pointsHelpedPersonsLabel.point,
                                          self.pointsHelpedPersonsDescriptionLabel.text];
     self.pointsHelpedContainerView.accessibilityLabel = helpedAccessibilityText;
     
     [self.pointsTotalLabel setPoint:user.totalPoints.integerValue animated:animated];
     NSString *totalAccessibilityLabel =
-    [NSString stringWithFormat: @"%i %@", self.pointsTotalLabel.point,
+    [NSString stringWithFormat: @"%li %@", (long)self.pointsTotalLabel.point,
                                           self.pointsTotalDescriptionLabel.text];
     self.pointsTotalContainerView.accessibilityLabel = totalAccessibilityLabel;
     
@@ -348,11 +348,11 @@ typedef NS_ENUM(NSInteger, BMESnoozeStep) {
     [self.pointsCommunityHelpedLabel setPoint:self.stats.helped.integerValue animated:animated];
     
     NSString *accessibilityLabel =
-    [NSString stringWithFormat: @"%@. %i %@. %i %@. %i %@",
+    [NSString stringWithFormat: @"%@. %li %@. %li %@. %li %@",
      MKLocalizedFromTable(BME_HELPER_MAIN_COMMUNITY_NETWORK_DESCRIPTION, BMEHelperMainLocalizationTable),
-     self.stats.blind.integerValue, self.descriptionCommunityBlindLabel.text,
-     self.stats.sighted.integerValue, self.descriptionCommunitySightedLabel.text,
-     self.stats.helped.integerValue, self.descriptionCommunityHelpedLabel.text];
+     (long)self.stats.blind.integerValue, self.descriptionCommunityBlindLabel.text,
+     (long)self.stats.sighted.integerValue, self.descriptionCommunitySightedLabel.text,
+     (long)self.stats.helped.integerValue, self.descriptionCommunityHelpedLabel.text];
     
     self.communityStatsContainer.accessibilityLabel = accessibilityLabel;
 }

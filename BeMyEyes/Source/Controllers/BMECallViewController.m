@@ -630,6 +630,32 @@ static NSString* signalValueOff = @"off";
     }
 }
 
+
+- (void) session:(OTSession*)session archiveStartedWithId:(NSString*)archiveId name:(NSString*)name
+{
+    [AnalyticsManager
+     trackEvent:AnalyticsEvent_ArchivingStarted
+     withProperties:@{
+                      AnalyticsManager.propertyKey_SessionId: session.sessionId,
+                      AnalyticsManager.propertyKey_ArchiveId: archiveId,
+                      AnalyticsManager.propertyKey_ArchiveLink: [NSString stringWithFormat:@"https://s3.amazonaws.com/%@/%@/%@/archive.mp4", BMES3BucketName, BMEOpenTokAPIKey, archiveId]
+                      }
+    ];
+}
+
+/*
+- (void) session:(OTSession*)session archiveStoppedWithId:(NSString*)archiveId
+{
+    [AnalyticsManager
+     trackEvent:AnalyticsEvent_ArchivingEnded
+     withProperties:@{
+                      AnalyticsManager.propertyKey_SessionId: session.sessionId,
+                      AnalyticsManager.propertyKey_ArchiveId: archiveId
+                      }
+     ];
+}*/
+
+
 #pragma mark -
 #pragma mark Publisher Delegate
 

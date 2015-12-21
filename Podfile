@@ -14,7 +14,7 @@ target :BeMyEyes do
     pod 'PSTAlertController', '~> 1.1'
     pod 'GVUserDefaults', '~> 0.9.4'
     pod 'Appirater', '~> 2.0.2'
-    pod 'NewRelicAgent', '~> 5.3.0'
+    pod 'NewRelicAgent', '5.3.0'
     pod 'MiawKit', '~> 1.2'
     pod 'FormatterKit', '~> 1.7.1'
     pod 'KeepLayout', :git => 'https://github.com/iMartinKiss/KeepLayout.git'
@@ -22,6 +22,7 @@ target :BeMyEyes do
     pod 'SDWebImage', '~> 3.6'
     pod 'Reveal-iOS-SDK', :configurations => ['Debug']
     pod 'Mixpanel', '~> 2.9.0'
+    pod 'le', :git => 'https://github.com/logentries/le_ios.git'
     
     target 'BeMyEyes Tests', :exclusive => true do
        pod 'FBSnapshotTestCase/Core'

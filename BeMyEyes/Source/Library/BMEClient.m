@@ -647,6 +647,13 @@ NSString* BMENormalizedDeviceTokenStringWithDeviceToken(id deviceToken) {
 #pragma mark -
 #pragma mark Private Methods
 
+
+- (void) deleteCurrentUser
+{
+    NSLog(@"Delete user: not implemented yet");
+}
+
+
 - (void)createUserWithParameters:(NSDictionary *)params completion:(void (^)(BOOL success, NSError *error))completion {
     NSLog(@"Create user with parameters: %@", params);
     [self postPath:@"users" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
