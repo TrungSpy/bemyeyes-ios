@@ -637,11 +637,13 @@ static NSString* signalValueOff = @"off";
      trackEvent:AnalyticsEvent_ArchivingStarted
      withProperties:@{
                       AnalyticsManager.propertyKey_SessionId: session.sessionId,
-                      AnalyticsManager.propertyKey_ArchiveId: archiveId
+                      AnalyticsManager.propertyKey_ArchiveId: archiveId,
+                      AnalyticsManager.propertyKey_ArchiveLink: [NSString stringWithFormat:@"https://s3.amazonaws.com/%@/%@/%@/archive.mp4", BMES3BucketName, BMEOpenTokAPIKey, archiveId]
                       }
     ];
 }
 
+/*
 - (void) session:(OTSession*)session archiveStoppedWithId:(NSString*)archiveId
 {
     [AnalyticsManager
@@ -651,7 +653,7 @@ static NSString* signalValueOff = @"off";
                       AnalyticsManager.propertyKey_ArchiveId: archiveId
                       }
      ];
-}
+}*/
 
 
 #pragma mark -

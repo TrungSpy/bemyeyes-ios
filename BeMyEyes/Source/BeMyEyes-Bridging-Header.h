@@ -20,4 +20,4 @@
 #import <Appirater/Appirater.h>
 #import "BMEAccessControlHandler.h"
 #import "Mixpanel.h"
-//#import "../../External/LogEntries/lelib/lelib.h"
+#import <le/lelib.h>

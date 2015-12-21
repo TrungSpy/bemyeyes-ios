@@ -28,7 +28,13 @@
 #define BMESlackUrl @""
 
 
-#define BMEMixpanelDevlopmentToken ""
-#define BMEMixpanelToken ""
+#define BMEMixpanelDevlopmentToken @""
+#define BMEMixpanelToken @""
+
+#define BMELogEntriesDevelopmentToken @""
+#define BMELogEntriesToken @""
+
+#define BMES3BucketName @""
+
 
 #endif

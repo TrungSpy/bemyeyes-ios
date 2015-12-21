@@ -3,7 +3,7 @@ PODS:
   - Appirater (2.0.5)
   - CrashlyticsFramework (2.2.10)
   - DCKeyValueObjectMapping (1.5)
-  - FBSnapshotTestCase/Core (2.0.4)
+  - FBSnapshotTestCase/Core (2.0.7)
   - FormatterKit (1.7.5):
     - FormatterKit/AddressFormatter (= 1.7.5)
     - FormatterKit/ArrayFormatter (= 1.7.5)
@@ -26,11 +26,12 @@ PODS:
   - GVUserDefaults (0.9.5)
   - ISO8601DateFormatter (0.7)
   - KeepLayout (1.6.0)
+  - le (1.1)
   - Masonry (0.5.3)
   - MiawKit (1.2.1)
-  - Mixpanel (2.9.0):
-    - Mixpanel/Mixpanel (= 2.9.0)
-  - Mixpanel/Mixpanel (2.9.0)
+  - Mixpanel (2.9.1):
+    - Mixpanel/Mixpanel (= 2.9.1)
+  - Mixpanel/Mixpanel (2.9.1)
   - MRProgress (0.8.2):
     - MRProgress/ActivityIndicator (= 0.8.2)
     - MRProgress/Blur (= 0.8.2)
@@ -61,8 +62,8 @@ PODS:
     - MRProgress/Helper
   - NewRelicAgent (5.3.0)
   - PSAlertView (1.1)
-  - PSTAlertController (1.1.0)
-  - Reveal-iOS-SDK (1.5.1)
+  - PSTAlertController (1.2.0)
+  - Reveal-iOS-SDK (1.6.2)
   - SDWebImage (3.7.3):
     - SDWebImage/Core (= 3.7.3)
   - SDWebImage/Core (3.7.3)
@@ -77,11 +78,12 @@ DEPENDENCIES:
   - GVUserDefaults (~> 0.9.4)
   - ISO8601DateFormatter (~> 0.7)
   - KeepLayout (from `https://github.com/iMartinKiss/KeepLayout.git`)
+  - le (from `https://github.com/logentries/le_ios.git`)
   - Masonry (~> 0.5.3)
   - MiawKit (~> 1.2)
   - Mixpanel (~> 2.9.0)
   - MRProgress (~> 0.8.0)
-  - NewRelicAgent (~> 5.3.0)
+  - NewRelicAgent (= 5.3.0)
   - PSAlertView (~> 1.1)
   - PSTAlertController (~> 1.1)
   - Reveal-iOS-SDK
@@ -90,30 +92,36 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   KeepLayout:
     :git: https://github.com/iMartinKiss/KeepLayout.git
+  le:
+    :git: https://github.com/logentries/le_ios.git
 
 CHECKOUT OPTIONS:
   KeepLayout:
-    :commit: f63fd8f376758a2ed234093a89c9ee5cd2218b0a
+    :commit: 6c464c4c23f31e7aa2a4c9088c0bb029e17ce2eb
     :git: https://github.com/iMartinKiss/KeepLayout.git
+  le:
+    :commit: 862ef21689ebfc2c0db960725ef0a08fe3966328
+    :git: https://github.com/logentries/le_ios.git
 
 SPEC CHECKSUMS:
   AFNetworking: cf8e418e16f0c9c7e5c3150d019a3c679d015018
   Appirater: e7c0a47fb67ee5041ce8479e6ba960927fb40264
   CrashlyticsFramework: 5b7a9fb3d94124e3c20a9b10f93244706cfdb0f1
   DCKeyValueObjectMapping: c2eb5a6529da100b2e49ef6a599663578051f077
-  FBSnapshotTestCase: d94cf34841c9e77390e29009e8e2713479d48753
+  FBSnapshotTestCase: 7e85180d0d141a0cf472352edda7e80d7eaeb547
   FormatterKit: a0c0674b06fda3ce910af9f2358ed0ed868fb48b
   GVUserDefaults: bd3efc5beab8f501d17e566eddc7acd6f2425c2a
   ISO8601DateFormatter: ab926648eebe497f4d167c0fd083992f959f1274
   KeepLayout: d85a52300a23ba1504ba330c5200bb01ba3baeb0
+  le: c54f8a67be9c0b068fa779f00641520c6e72e6ec
   Masonry: 9f515466afe48632562342a40a1c224071a1a022
   MiawKit: 97fd3545bcee64e8317479adf154173a021918b8
-  Mixpanel: 42ae6168effc48481d957f7883dd8514a398738d
+  Mixpanel: 5ca24b2a05f4c77fe9bcfe7671d681d0f3f8d76f
   MRProgress: f4cfe862082418e8f542f077772283f425d6c699
   NewRelicAgent: fea3ed94d4c363a5c94f811fd6eee3b6028128d0
   PSAlertView: 986043a1db2826098b64cc849b9e72e4c6d073f3
-  PSTAlertController: cb21afcfa76c3229feec7db044afd4f60dab5892
-  Reveal-iOS-SDK: c9c55cad2729c85f6ced415f1b21857c9a2d8ef9
+  PSTAlertController: 9b802dfbda54fee2683bfd6dda7023a6de895d5b
+  Reveal-iOS-SDK: e2250b3c155bcfac53ae223ddc1f76d08f206c33
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
 
 COCOAPODS: 0.39.0

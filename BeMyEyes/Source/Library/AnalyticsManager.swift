@@ -46,13 +46,14 @@ import Foundation
 @objc class AnalyticsManager: NSObject
 {
     // Keys for tracked properties:
-    static let propertyKey_RequestId =  "Request Id"
-    static let propertyKey_SessionId =  "Session Id"
-    static let propertyKey_ArchiveId =  "Archive Id"
-    static let propertyKey_Result =     "Result"
-    static let propertyKey_Reason =     "Reason"
-    static let propertyKey_Value =      "Value"
-    static let propertyKey_Error =      "Error"
+    static let propertyKey_RequestId =      "Request Id"
+    static let propertyKey_SessionId =      "Session Id"
+    static let propertyKey_ArchiveId =      "Archive Id"
+    static let propertyKey_ArchiveLink =    "Archive Link"
+    static let propertyKey_Result =         "Result"
+    static let propertyKey_Reason =         "Reason"
+    static let propertyKey_Value =          "Value"
+    static let propertyKey_Error =          "Error"
     
     
     // MARK: - The methods to actually use from outside:
@@ -97,15 +98,15 @@ import Foundation
     
     private override init()
     {
-        //LELog.sharedInstance().token = "1a1e57de-ebd2-3605-8706-9845fe40529b"
-        
         if (ApplicationProperties.environment() == .Production)
         {
             Mixpanel.sharedInstanceWithToken(BMEMixpanelToken)
+            //LELog.sharedInstance().token = BMELogEntriesToken
         }
         else
         {
             Mixpanel.sharedInstanceWithToken(BMEMixpanelDevlopmentToken)
+            //LELog.sharedInstance().token = BMELogEntriesDevelopmentToken
         }
         
         if let bundleId = NSBundle.mainBundle().bundleIdentifier
@@ -198,8 +199,34 @@ import Foundation
         AnalyticsManager.LogWhite("---- Track event: \(AnalyticsManager.stringForAnalyticsEvent(event)) - properties: \(properties)")
         Mixpanel.sharedInstance().track(AnalyticsManager.stringForAnalyticsEvent(event), properties: properties)
         
-//        let log = LELog.sharedInstance()
-//        log.log("\(AnalyticsManager.stringForAnalyticsEvent(event)): \(properties)")
+        /*
+        let user = BMEClient.sharedClient().currentUser
+        
+        var logData = [String: NSString]()
+        logData["user.email"] = user.email != nil ? user.email! : "N/A"
+        logData["user.usertype"] = user.isBlind() ? "blind" : "helper"
+        logData["user.name_first"] = user.firstName != nil ? user.firstName! : "N/A"
+        logData["user.name_last"] = user.lastName != nil ? user.lastName! : "N/A"
+        
+        if let theProperties = properties
+        {
+            for key in theProperties.keys
+            {
+                logData["\(key)"] = "\(theProperties[key]!)"
+            }
+        }
+        
+        var logString = "" //"{"
+        
+        var index = 1
+        for key in logData.keys
+        {
+            logString = logString + " \(key)=\"\(logData[key]!)\" "
+            index++
+        }
+        
+        LELog.sharedInstance().log("event=\(AnalyticsManager.stringForAnalyticsEvent(event)) \(logString)")
+*/
     }
     
     private var _pendingTimedEvents = [AnalyticsEvent]()
