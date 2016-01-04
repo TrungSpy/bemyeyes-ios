@@ -9,16 +9,16 @@
 import Foundation
 
 
-
 @objc enum AnalyticsEvent: Int
 {
     case _TestEvent
     
     // General:
     case _Signup
+    case _Login
+    
     case _Call
     case _ArchivingStarted
-    case _ArchivingEnded
     
     case _ReportAbuse
     case _ReportAbuseFailed
@@ -45,6 +45,9 @@ import Foundation
 
 @objc class AnalyticsManager: NSObject
 {
+    // Configuration:
+    static let trackToLogEntries = false
+    
     // Keys for tracked properties:
     static let propertyKey_RequestId =      "Request Id"
     static let propertyKey_SessionId =      "Session Id"
@@ -91,6 +94,14 @@ import Foundation
     }
     
     
+    static func trackTestEvent()
+    {
+        AnalyticsManager.instance.trackEvent(
+            ._TestEvent,
+            withProperties: ["random": Int(arc4random_uniform(10))]
+        )
+    }
+    
     
     
     // MARK: - Internal workings:
@@ -101,12 +112,12 @@ import Foundation
         if (ApplicationProperties.environment() == .Production)
         {
             Mixpanel.sharedInstanceWithToken(BMEMixpanelToken)
-            //LELog.sharedInstance().token = BMELogEntriesToken
+            LELog.sharedInstance().token = BMELogEntriesToken
         }
         else
         {
             Mixpanel.sharedInstanceWithToken(BMEMixpanelDevlopmentToken)
-            //LELog.sharedInstance().token = BMELogEntriesDevelopmentToken
+            LELog.sharedInstance().token = BMELogEntriesDevelopmentToken
         }
         
         if let bundleId = NSBundle.mainBundle().bundleIdentifier
@@ -197,16 +208,36 @@ import Foundation
         }
         
         AnalyticsManager.LogWhite("---- Track event: \(AnalyticsManager.stringForAnalyticsEvent(event)) - properties: \(properties)")
-        Mixpanel.sharedInstance().track(AnalyticsManager.stringForAnalyticsEvent(event), properties: properties)
         
-        /*
+        trackEventToMixPanel(event, withProperties: properties)
+        
+       if (AnalyticsManager.trackToLogEntries)
+       {
+            trackEventToLogEntries(event, withProperties: properties)
+        }
+    }
+    
+    private func trackEventToMixPanel(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
+    {
+        Mixpanel.sharedInstance().track(AnalyticsManager.stringForAnalyticsEvent(event), properties: properties)
+    }
+    
+    private func trackEventToLogEntries(event: AnalyticsEvent, withProperties properties: [NSObject: AnyObject]?)
+    {
         let user = BMEClient.sharedClient().currentUser
         
         var logData = [String: NSString]()
-        logData["user.email"] = user.email != nil ? user.email! : "N/A"
-        logData["user.usertype"] = user.isBlind() ? "blind" : "helper"
-        logData["user.name_first"] = user.firstName != nil ? user.firstName! : "N/A"
-        logData["user.name_last"] = user.lastName != nil ? user.lastName! : "N/A"
+        if let user = user
+        {
+            logData["user.email"] = user.email != nil ? user.email! : "N/A"
+            logData["user.usertype"] = user.isBlind() ? "blind" : "helper"
+            logData["user.name_first"] = user.firstName != nil ? user.firstName! : "N/A"
+            logData["user.name_last"] = user.lastName != nil ? user.lastName! : "N/A"
+        }
+        else
+        {
+            logData["user"] = "N/A"
+        }
         
         if let theProperties = properties
         {
@@ -216,7 +247,7 @@ import Foundation
             }
         }
         
-        var logString = "" //"{"
+        var logString = ""
         
         var index = 1
         for key in logData.keys
@@ -226,7 +257,6 @@ import Foundation
         }
         
         LELog.sharedInstance().log("event=\(AnalyticsManager.stringForAnalyticsEvent(event)) \(logString)")
-*/
     }
     
     private var _pendingTimedEvents = [AnalyticsEvent]()
@@ -301,9 +331,10 @@ import Foundation
             
         // General:
         case ._Signup:                                  return "Signup"
+        case ._Login:                                   return "Login"
+            
         case ._Call:                                    return "Call"
         case ._ArchivingStarted:                        return "Archiving started"
-        case ._ArchivingEnded:                          return "Archiving ended"
            
         case ._ReportAbuse:                             return "Report abuse"
         case ._ReportAbuseFailed:                       return "Report abuse failed"

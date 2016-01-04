@@ -28,10 +28,15 @@
 @property (weak, nonatomic) IBOutlet UILabel *descriptionCommunitySightedLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionCommunityBlindLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionCommunityHelpedLabel;
+
+@property (weak, nonatomic) IBOutlet UIButton *buttonTrackTestEvent;
+
 @property (strong, nonatomic) NSArray *_accessibilityElements;
 
 @property (assign, nonatomic) BMERole role;
+
 @end
+
 
 static NSString *const BMEHelperSegue = @"Helper";
 static NSString *const BMEBlindSegue = @"Blind";
@@ -42,8 +47,14 @@ static NSString *const BMELoginSegue = @"Login";
 #pragma mark -
 #pragma mark Lifecycle
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
+    
+    if ([ApplicationProperties environment] == ApplicationEnvironmentProduction)
+    {
+        _buttonTrackTestEvent.hidden = true;
+    }
     
     [MKLocalization registerForLocalization:self];
     
@@ -162,5 +173,15 @@ static NSString *const BMELoginSegue = @"Login";
 - (void)goToLoginIfPossible:(NSNotification *)notification {
     [self performLoginSegue];
 }
+
+
+
+#pragma mark - Test
+
+- (IBAction)testEventButtonClicked:(id)sender
+{
+    [AnalyticsManager trackTestEvent];
+}
+
 
 @end
