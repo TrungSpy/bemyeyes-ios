@@ -46,7 +46,7 @@ import Foundation
 @objc class AnalyticsManager: NSObject
 {
     // Configuration:
-    static let trackToLogEntries = false
+    static let trackToLogEntries = true
     
     // Keys for tracked properties:
     static let propertyKey_RequestId =      "Request Id"
@@ -98,7 +98,14 @@ import Foundation
     {
         AnalyticsManager.instance.trackEvent(
             ._TestEvent,
-            withProperties: ["random": Int(arc4random_uniform(10))]
+            withProperties: [
+                "random0": Int(arc4random_uniform(10)),
+                "random1": Int(arc4random_uniform(10)),
+                "nested_random" : [
+                    "nested_random0": Int(arc4random_uniform(10)),
+                    "nested_random1": Int(arc4random_uniform(10))
+                ]
+            ]
         )
     }
     
@@ -226,7 +233,10 @@ import Foundation
     {
         let user = BMEClient.sharedClient().currentUser
         
-        var logData = [String: NSString]()
+        var logData = [NSObject: AnyObject]()
+        
+        logData["event"] = AnalyticsManager.stringForAnalyticsEvent(event)
+
         if let user = user
         {
             logData["user.email"] = user.email != nil ? user.email! : "N/A"
@@ -239,24 +249,30 @@ import Foundation
             logData["user"] = "N/A"
         }
         
-        if let theProperties = properties
+        if let eventProperties = properties
         {
-            for key in theProperties.keys
+            for (key, value) in eventProperties
             {
-                logData["\(key)"] = "\(theProperties[key]!)"
+                if let _ = logData[key]
+                {
+                    NSLog("Merging analytics dictionaries: Key already exists: \(key)")
+                }
+                
+                logData[key] = value
             }
         }
         
-        var logString = ""
-        
-        var index = 1
-        for key in logData.keys
+        do
         {
-            logString = logString + " \(key)=\"\(logData[key]!)\" "
-            index++
+            let theJSONData = try NSJSONSerialization.dataWithJSONObject(logData, options: NSJSONWritingOptions(rawValue: 0))
+            let theJSONText = NSString(data: theJSONData, encoding: NSASCIIStringEncoding)
+            
+            LELog.sharedInstance().log(theJSONText)
         }
-        
-        LELog.sharedInstance().log("event=\(AnalyticsManager.stringForAnalyticsEvent(event)) \(logString)")
+        catch let error
+        {
+            NSLog("Failed tracking to LogEntries: \(error)")
+        }
     }
     
     private var _pendingTimedEvents = [AnalyticsEvent]()
