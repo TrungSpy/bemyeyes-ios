@@ -46,7 +46,7 @@ import Foundation
 @objc class AnalyticsManager: NSObject
 {
     // Configuration:
-    static let trackToLogEntries = true
+    static let trackToLogEntries = false
     
     // Keys for tracked properties:
     static let propertyKey_RequestId =      "Request Id"
